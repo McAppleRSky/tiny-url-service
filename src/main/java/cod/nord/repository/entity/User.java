@@ -9,6 +9,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
+import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import java.util.Collection;
 import java.util.Set;
@@ -18,22 +19,26 @@ import java.util.Set;
 @Getter @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class User implements UserDetails {
+public class User //implements UserDetails
+{
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
+    private Integer id;
     @NotBlank(message = "username cannot be empty")
     private String username;
     @NotBlank(message = "password cannot be empty")
     private String password;
+    @Email(message="Email is not correct")
+    @NotBlank(message = "email cannot be empty")
+    private String email;
 
     @ElementCollection(targetClass = Role.class, fetch = FetchType.EAGER)
     @CollectionTable(name = "user_role", joinColumns = @JoinColumn(name = "user_id"))
     @Enumerated(EnumType.STRING)
     private Set<Role> roles;
 
-    @Override
+    /*@Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         throw new NotImplementedException("Collection<? extends GrantedAuthority> getAuthorities()");
     }
@@ -66,6 +71,6 @@ public class User implements UserDetails {
     @Override
     public boolean isEnabled() {
         throw new NotImplementedException("boolean isEnabled()");
-    }
+    }*/
 
 }

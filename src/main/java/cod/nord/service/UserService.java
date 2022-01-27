@@ -1,22 +1,31 @@
 package cod.nord.service;
 
-import cod.nord.repository.UserRepository;
 import cod.nord.repository.entity.User;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import cod.nord.service.model.UserRequest;
+import cod.nord.service.model.UserResponse;
 
-@Service
-public class UserService implements UserDetailsService{
+import javax.annotation.Nonnull;
+import java.util.List;
 
-    @Autowired
-    private UserRepository userRepository;
+public interface UserService {
 
-    @Override
-    public User loadUserByUsername(String username) throws UsernameNotFoundException {
-        return userRepository.findByUsername(username);
-    }
+    @Nonnull
+    List<UserResponse> findAll();
+
+    @Nonnull
+    UserResponse getById(int id);
+
+    int create(@Nonnull UserRequest requested);
+
+    @Nonnull
+    UserResponse update(int id, @Nonnull UserRequest requested);
+
+    void delete(int id);
+
+    User getByLogin(String username);
+
+    /*void addPersonToDepartment(int departmentId, int personId);
+    void removePersonFromDepartment(int departmentId, int personId);
+    void setDepartmentDao(DepartmentDao departmentDao);*/
 
 }

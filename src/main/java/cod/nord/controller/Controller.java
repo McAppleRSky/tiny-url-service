@@ -1,4 +1,4 @@
-package cod.nord;
+package cod.nord.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

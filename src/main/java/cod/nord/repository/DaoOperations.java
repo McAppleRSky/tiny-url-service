@@ -1,5 +1,6 @@
 package cod.nord.repository;
 
+import cod.nord.repository.entity.User;
 import org.springframework.data.repository.NoRepositoryBean;
 
 import javax.annotation.Nonnull;
@@ -20,5 +21,8 @@ public interface DaoOperations<T, ID> {
 
     @Nullable
     T delete(@Nonnull ID id);
+
+    @Nonnull
+    T save(@Nonnull T entity);
 
 }

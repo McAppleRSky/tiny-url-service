@@ -8,6 +8,6 @@ import lombok.experimental.Accessors;
 public class UserResponse {
 
     private Integer id;
-    private String username;
+    private String name;
 
 }

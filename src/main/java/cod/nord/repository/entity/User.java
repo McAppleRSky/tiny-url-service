@@ -26,7 +26,9 @@ public class User //implements UserDetails
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
     @NotBlank(message = "username cannot be empty")
-    private String username;
+    private String name;
+    @NotBlank(message = "login cannot be empty")
+    private String logname;
     @NotBlank(message = "password cannot be empty")
     private String password;
     @Email(message="Email is not correct")

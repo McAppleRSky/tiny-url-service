@@ -13,6 +13,7 @@ import javax.annotation.Nonnull;
 import javax.persistence.EntityNotFoundException;
 
 import java.util.List;
+import java.util.Optional;
 
 import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toList;
@@ -40,7 +41,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public int create(@Nonnull UserRequest requested) {
         User creating = new User();
-        creating.setUsername(requested.getUsername());
+        creating.setName(requested.getName());
         creating.setEmail(requested.getEmail());
         creating.setPassword(requested.getPassword());
         User created = personDao.save(creating);
@@ -65,6 +66,11 @@ public class UserServiceImpl implements UserService {
     @Override
     public void delete(int id) {
         personDao.delete(id);
+    }
+
+    @Override
+    public Optional<User> getByLogin(String username) {
+        throw new NotImplementedException("User getByLogin(String username)");
     }
 
 }

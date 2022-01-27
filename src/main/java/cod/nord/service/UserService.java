@@ -6,6 +6,7 @@ import cod.nord.service.model.UserResponse;
 
 import javax.annotation.Nonnull;
 import java.util.List;
+import java.util.Optional;
 
 public interface UserService {
 
@@ -22,7 +23,7 @@ public interface UserService {
 
     void delete(int id);
 
-    User getByLogin(String username);
+    Optional<User> getByLogin(String username);
 
     /*void addPersonToDepartment(int departmentId, int personId);
     void removePersonFromDepartment(int departmentId, int personId);

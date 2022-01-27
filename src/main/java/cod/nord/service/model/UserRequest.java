@@ -11,10 +11,9 @@ import javax.validation.constraints.*;
 public class UserRequest {
 
     @NotEmpty(message = "{field.is.empty}")
-    private String username;
-
-    private String email;
-
+    private String name;
+    private String logname;
     private String password;
+    private String email;
 
 }

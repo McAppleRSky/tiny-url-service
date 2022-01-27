@@ -1,22 +1,33 @@
 package cod.nord.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
+import cod.nord.service.AuthService;
+import cod.nord.service.JwtAuthentication;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
+@RequestMapping("api")
+@RequiredArgsConstructor
 public class Controller {
 
-//    @Autowired Service service;
+    private final AuthService authService;
 
-    @PostMapping(value = "/api/0.0.1/tiny")
-    public ResponseEntity<String> send(@RequestBody String body){
-        int count = 0//dispatcherService.sendMessage(body)
-                ;
-        return new ResponseEntity<>("Message sent: " + count, count > 0 ? HttpStatus.OK : HttpStatus.UNPROCESSABLE_ENTITY);
+    @PreAuthorize("hasAuthority('USER')")
+    @GetMapping("hello/user")
+    public ResponseEntity<String> helloUser() {
+        final JwtAuthentication authInfo = authService.getAuthInfo();
+        return ResponseEntity.ok("Hello user " + authInfo.getPrincipal() + "!");
+    }
+
+    @PreAuthorize("hasAuthority('ADMIN')")
+    @GetMapping("hello/admin")
+    public ResponseEntity<String> helloAdmin() {
+        final JwtAuthentication authInfo = authService.getAuthInfo();
+        return ResponseEntity.ok("Hello admin " + authInfo.getPrincipal() + "!");
     }
 
 }

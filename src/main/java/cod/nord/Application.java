@@ -20,3 +20,5 @@ public class Application {
 
     // https://struchkov.dev/blog/jwt-implementation-in-spring/
     // https://github.com/Example-uPagge/jwt-server-spring
+    // https://www.marcobehler.com/guides/spring-mvc
+    // https://javascopes.com/spring-annotations-requestmapping-and-its-variants-e8cf47fd/

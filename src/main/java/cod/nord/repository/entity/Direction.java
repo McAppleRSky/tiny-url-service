@@ -6,10 +6,10 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import javax.validation.constraints.Size;
 import java.sql.Timestamp;
 
 @Entity
-//@Table(name = "direction")
 @Getter @Setter
 @NoArgsConstructor
 @AllArgsConstructor
@@ -17,13 +17,18 @@ public class Direction {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-//    @Column(name = "id")
     private Integer id;
 
-    @Column(unique=true)
+    @Column(unique=true, nullable=false, length=3)
     private String path;
 
+    @Column(unique=true, nullable=false, length=120)
+    @Size(min = 5, max = 120)
     private String url;
     Timestamp expire;
+
+    @ManyToOne
+    @JoinColumn(name="usr_id", nullable=false)
+    private User user;
 
 }

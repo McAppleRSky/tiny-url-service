@@ -1,4 +1,4 @@
-package cod.nord.service;
+package cod.nord.service.auth;
 
 public class AuthException extends RuntimeException {
 

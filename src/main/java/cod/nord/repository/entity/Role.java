@@ -2,7 +2,6 @@ package cod.nord.repository.entity;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.ToString;
 import org.springframework.security.core.GrantedAuthority;
 
 @Getter
@@ -11,8 +10,14 @@ public enum Role implements GrantedAuthority {
 
     USER("admin"),
     ADMIN("user"),
-    GUEST("guest");
+//    GUEST("guest")
+    ;
 
     private final String authority;
+
+    @Override
+    public String toString() {
+        return authority;
+    }
 
 }

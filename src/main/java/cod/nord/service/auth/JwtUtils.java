@@ -1,4 +1,4 @@
-package cod.nord.service;
+package cod.nord.service.auth;
 
 import cod.nord.repository.entity.Role;
 import io.jsonwebtoken.Claims;
@@ -15,7 +15,7 @@ public final class JwtUtils {
     public static JwtAuthentication generate(Claims claims) {
         final JwtAuthentication jwtInfoToken = new JwtAuthentication();
         jwtInfoToken.setRoles(getRoles(claims));
-        jwtInfoToken.setFirstName(claims.get("firstName", String.class));
+        jwtInfoToken.setFirstName(claims.get("name", String.class));
         jwtInfoToken.setUsername(claims.getSubject());
         return jwtInfoToken;
     }

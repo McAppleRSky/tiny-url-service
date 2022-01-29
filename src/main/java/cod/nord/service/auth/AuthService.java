@@ -1,9 +1,8 @@
-package cod.nord.service;
+package cod.nord.service.auth;
 
-import cod.nord.service.model.JwtRequest;
-import cod.nord.service.model.JwtResponse;
-
-import javax.security.auth.message.AuthException;
+import cod.nord.service.auth.JwtAuthentication;
+import cod.nord.service.auth.model.JwtRequest;
+import cod.nord.service.auth.model.JwtResponse;
 
 public interface AuthService {
 

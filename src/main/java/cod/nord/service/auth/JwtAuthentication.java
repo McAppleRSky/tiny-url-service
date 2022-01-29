@@ -1,4 +1,4 @@
-package cod.nord.service.model;
+package cod.nord.service.auth;
 
 import cod.nord.repository.entity.Role;
 import lombok.Getter;
@@ -12,8 +12,10 @@ import java.util.Set;
 
 @Getter @Setter
 public class JwtAuthentication implements Authentication {
+
     private boolean authenticated;
-    private String name;
+    private String username;    // username with password
+    private String  firstName;  // principalName
     private Set<Role> roles;
 
     @Override
@@ -31,22 +33,22 @@ public class JwtAuthentication implements Authentication {
         throw new NotImplementedException("Object getDetails()");
     }
 
-    @Override
-    public Object getPrincipal() {
-        return name;
+    @Override public Object getPrincipal() {
+        return username;
     }
 
     @Override
-    public String getName() {
-        throw new NotImplementedException("String getName()");
+    public boolean isAuthenticated() {
+        return authenticated;
     }
-
-    @Override
-    public boolean isAuthenticated() { return authenticated; }
 
     @Override
     public void setAuthenticated(boolean isAuthenticated) throws IllegalArgumentException {
         this.authenticated = isAuthenticated;
+    }
+
+    @Override public String getName() {
+        return firstName;
     }
 
 }

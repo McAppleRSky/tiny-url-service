@@ -1,4 +1,4 @@
-package cod.nord.repository;
+package cod.nord.repository.dao;
 
 import cod.nord.repository.entity.User;
 import org.springframework.data.repository.NoRepositoryBean;
@@ -8,7 +8,7 @@ import javax.annotation.Nullable;
 import java.util.List;
 
 @NoRepositoryBean
-public interface DaoOperations<T, ID> {
+public interface IDao<T, ID> {
 
     @Nullable
     T findById(@Nonnull ID id);

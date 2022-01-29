@@ -4,9 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.apache.commons.lang3.NotImplementedException;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
@@ -25,12 +22,16 @@ public class User //implements UserDetails
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
+
     @NotBlank(message = "username cannot be empty")
     private String name;
+
     @NotBlank(message = "login cannot be empty")
-    private String logname;
+    private String login;
+
     @NotBlank(message = "password cannot be empty")
     private String password;
+
     @Email(message="Email is not correct")
     @NotBlank(message = "email cannot be empty")
     private String email;
@@ -40,36 +41,19 @@ public class User //implements UserDetails
     @Enumerated(EnumType.STRING)
     private Set<Role> roles;
 
-    /*@Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        throw new NotImplementedException("Collection<? extends GrantedAuthority> getAuthorities()");
-    }
+    @OneToMany(mappedBy="id", cascade=CascadeType.ALL)
+//    @OneToMany(cascade = {CascadeType.PERSIST})
+    private Set<Direction> directions;
 
-    @Override
-    public String getPassword() {
-        throw new NotImplementedException("String getPassword()");
-    }
-
-    @Override
-    public String getUsername() {
-        throw new NotImplementedException("String getUsername()");
-    }
-
-    @Override
+    /* @Override
     public boolean isAccountNonExpired() {
-        throw new NotImplementedException("boolean isAccountNonExpired()");
-    }
-
+        throw new NotImplementedException("boolean isAccountNonExpired()");}
     @Override
     public boolean isAccountNonLocked() {
-        throw new NotImplementedException("boolean isAccountNonLocked()");
-    }
-
+        throw new NotImplementedException("boolean isAccountNonLocked()");}
     @Override
     public boolean isCredentialsNonExpired() {
-        throw new NotImplementedException("boolean isCredentialsNonExpired()");
-    }
-
+        throw new NotImplementedException("boolean isCredentialsNonExpired()");}
     @Override
     public boolean isEnabled() {
         throw new NotImplementedException("boolean isEnabled()");

@@ -1,6 +1,6 @@
 package cod.nord.service;
 
-import cod.nord.repository.PersonDao;
+import cod.nord.repository.dao.UserDao;
 import cod.nord.repository.entity.User;
 import cod.nord.service.model.UserRequest;
 import cod.nord.service.model.UserResponse;
@@ -15,14 +15,11 @@ import javax.persistence.EntityNotFoundException;
 import java.util.List;
 import java.util.Optional;
 
-import static java.util.Optional.ofNullable;
-import static java.util.stream.Collectors.toList;
-
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
 
-    private final PersonDao personDao;
+    private final UserDao personDao;
 
     @Transactional(readOnly = true)
     @Override @Nonnull
@@ -70,6 +67,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Optional<User> getByLogin(String username) {
+        findAll().stream().findAny();
         throw new NotImplementedException("User getByLogin(String username)");
     }
 

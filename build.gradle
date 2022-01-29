@@ -31,49 +31,27 @@ repositories {
 }*/
 
 ext {
-    fingBugs_version = "3.0.2"
-    jackson_version = "2.13.1"
+//    jackson_version = "2.13.1"
 }
+
 dependencies {
     compileOnly 'com.google.code.findbugs:jsr305:3.0.2'
-    testImplementation 'org.junit.jupiter:junit-jupiter-api'
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
+    testImplementation  'org.junit.jupiter:junit-jupiter-api'
+    testRuntimeOnly     'org.junit.jupiter:junit-jupiter-engine'
     testImplementation 'org.mockito:mockito-core:'
-    compileOnly 'org.projectlombok:lombok'
+    compileOnly         'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
     implementation 'org.apache.commons:commons-lang3'
-//    implementation "org.eclipse.jetty:jetty-server:$jetty9_version"
-//    implementation "org.eclipse.jetty:jetty-webapp:$jetty9_version"
-//    compileOnly 'javax.servlet:javax.servlet-api:3.1.0'
     implementation 'javax.persistence:javax.persistence-api'
     implementation 'javax.validation:validation-api'
+    implementation 'javax.xml.bind:jaxb-api'
     implementation 'org.hibernate:hibernate-core'
     implementation 'com.h2database:h2'
     implementation 'org.flywaydb:flyway-core'
-
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'io.jsonwebtoken:jjwt:0.9.1'
-
-    /*
-    implementation 'org.springframework.boot:spring-boot-starter'
-    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-actuator', version: '2.6.3'
-    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-data-jpa', version: '2.6.3'
-    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-data-rest', version: '2.6.3'
-    implementation group: 'org.springframework.data', name: 'spring-data-rest-hal-browser', version: '3.3.9.RELEASE'
-    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-web', version: '2.6.3'
-
-      testImplementation 'org.springframework.boot:spring-boot-starter-test'
-    testImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: '2.6.3'
-
-    compileOnly 'org.springframework.boot:spring-boot-configuration-processor'
-  //  implementation group: 'org.springframework.boot', name: 'spring-boot-configuration-processor', version: '2.5.4'
-  //  compileOnly group: 'org.springframework.boot', name: 'spring-boot-configuration-processor', version: '2.5.4'
-    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-validation', version: '2.5.4'
-      testImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: '2.6.3'
-
-      implementation group: 'javax.xml.bind', name: 'jaxb-api', version: '2.4.0-b180830.0359'*/
 }
 
 

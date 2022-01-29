@@ -1,4 +1,4 @@
-package cod.nord.service;
+package cod.nord.service.auth.model;
 
 import cod.nord.repository.entity.Role;
 import lombok.Getter;
@@ -10,12 +10,12 @@ import org.springframework.security.core.GrantedAuthority;
 import java.util.Collection;
 import java.util.Set;
 
+// TODO refactoring
 @Getter @Setter
 public class JwtAuthentication implements Authentication {
 
     private boolean authenticated;
-    private String username;    // username with password
-    private String  firstName;  // principalName
+    private String name;
     private Set<Role> roles;
 
     @Override
@@ -33,22 +33,22 @@ public class JwtAuthentication implements Authentication {
         throw new NotImplementedException("Object getDetails()");
     }
 
-    @Override public Object getPrincipal() {
-        return username;
+    @Override
+    public Object getPrincipal() {
+        return name;
     }
 
     @Override
-    public boolean isAuthenticated() {
-        return authenticated;
+    public String getName() {
+        throw new NotImplementedException("String getName()");
     }
+
+    @Override
+    public boolean isAuthenticated() { return authenticated; }
 
     @Override
     public void setAuthenticated(boolean isAuthenticated) throws IllegalArgumentException {
         this.authenticated = isAuthenticated;
-    }
-
-    @Override public String getName() {
-        return firstName;
     }
 
 }

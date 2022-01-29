@@ -6,20 +6,24 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.sql.Timestamp;
 
 @Entity
-@Table(name = "path")
+//@Table(name = "direction")
 @Getter @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Path {
+public class Direction {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "id")
-    private Long id;
+//    @Column(name = "id")
+    private Integer id;
 
-    @OneToOne(mappedBy = "url")
-    private Url url;
+    @Column(unique=true)
+    private String path;
+
+    private String url;
+    Timestamp expire;
 
 }

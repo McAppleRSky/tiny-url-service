@@ -1,4 +1,4 @@
-package cod.nord.service;
+package cod.nord.service.auth;
 
 import cod.nord.repository.entity.User;
 import io.jsonwebtoken.*;
@@ -32,12 +32,11 @@ public class JwtProvider {
         final Instant accessExpirationInstant = now.plusMinutes(5).atZone(ZoneId.systemDefault()).toInstant();
         final Date accessExpiration = Date.from(accessExpirationInstant);
         final String accessToken = Jwts.builder()
-                .setSubject(user.getName())
+                .setSubject(user.getLogin())
                 .setExpiration(accessExpiration)
                 .signWith(SignatureAlgorithm.HS512, jwtAccessSecret)
-                .claim("email", user.getEmail())
-//                .claim("password", user.getPassword())
-                .claim("roles", user.getRoles())
+//                .claim("roles", user.getRoles())
+//                .claim("name", user.getName())
                 .compact();
         return accessToken;
     }
@@ -47,11 +46,9 @@ public class JwtProvider {
         final Instant refreshExpirationInstant = now.plusDays(30).atZone(ZoneId.systemDefault()).toInstant();
         final Date refreshExpiration = Date.from(refreshExpirationInstant);
         final String refreshToken = Jwts.builder()
-                .setSubject(user.getLogname())
+                .setSubject(user.getLogin())
                 .setExpiration(refreshExpiration)
                 .signWith(SignatureAlgorithm.HS512, jwtRefreshSecret)
-                .claim("roles", user.getRoles())
-                .claim("name", user.getName())
                 .compact();
         return refreshToken;
     }
@@ -66,7 +63,9 @@ public class JwtProvider {
 
     private boolean validateToken(@NonNull String token, @NonNull String secret) {
         try {
-            Jwts.parser().setSigningKey(secret).parseClaimsJws(token);
+            Jwts.parser()
+                    .setSigningKey(secret)
+                    .parseClaimsJws(token);
             return true;
         } catch (ExpiredJwtException expEx) {
             log.error("Token expired", expEx);
@@ -91,7 +90,10 @@ public class JwtProvider {
     }
 
     private Claims getClaims(@NonNull String token, @NonNull String secret) {
-        return Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody();
+        return Jwts.parser()
+                .setSigningKey(secret)
+                .parseClaimsJws(token)
+                .getBody();
     }
 
 }

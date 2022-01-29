@@ -27,12 +27,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .csrf().disable()
                 .sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                .and()
-                .authorizeRequests()
-                .antMatchers("/api/auth/login", "/api/auth/token").permitAll()
-                .anyRequest().authenticated()
-                .and()
-                .addFilterAfter(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+                    .and()
+                        .authorizeRequests()
+                        .antMatchers("/api/0.0.1/login", "/api/auth/token").permitAll()
+                        .anyRequest().authenticated()
+                    .and()
+                        .addFilterAfter(jwtFilter, UsernamePasswordAuthenticationFilter.class);
     }
 
     @Bean

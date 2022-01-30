@@ -8,6 +8,7 @@ import cod.nord.service.auth.model.RefreshJwtRequest;
 import cod.nord.service.model.*;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.NotImplementedException;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -27,6 +28,9 @@ public class MainController implements UserServletable, AuthServletable, UrlServ
     private final AuthService authService;
     private final UserService userService;
     private final Map<String, String> urlService;
+
+    @Value("${base.host.name}")
+    private String defaultHostName;
 
     @GetMapping(value = "/api/0.0.1/user", produces = MediaType.APPLICATION_JSON_VALUE)
     @Override
@@ -92,15 +96,26 @@ public class MainController implements UserServletable, AuthServletable, UrlServ
 
     @GetMapping
     @Override
+    public void redirectEmpty(HttpServletRequest request, HttpServletResponse response) {
+        response.setStatus(404);
+        System.out.println();
+    }
+
+    @GetMapping("/*")
+    @Override
     public void redirect(HttpServletRequest request, HttpServletResponse response) {
-        String projectUrl = urlService.get(
-                request
-                        .getPathInfo()
-                        .split("/", 3)[1] );
-        // null
-        // throw bound
-        response.setHeader("Location", projectUrl);
+        String path = request.getRequestURI();
+        StringBuffer requestURL = request.getRequestURL();
+        String contextPath = request.getContextPath();
+        String pathStr = path.split("/", 3)[1];
+        if (pathStr.length()<3) {
+            String projectUrl = urlService.get(pathStr);
+            if (projectUrl==null){
+                projectUrl = defaultHostName;
+            }}
+        response.setHeader("Location", defaultHostName);
         response.setStatus(302);
+        // throw bound
     }
 
 }
@@ -129,4 +144,5 @@ interface AuthServletable {
 
 interface UrlServletable {
     void redirect(HttpServletRequest request, HttpServletResponse response);
+    void redirectEmpty(HttpServletRequest request, HttpServletResponse response);
 }

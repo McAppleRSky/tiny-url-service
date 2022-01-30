@@ -6,6 +6,7 @@ import cod.nord.service.model.UserRequest;
 import cod.nord.service.model.UserResponse;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.NotImplementedException;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,6 +21,9 @@ import java.util.Optional;
 public class UserServiceImpl implements UserService {
 
     private final UserDao personDao;
+
+    @Value("${boot.security.user}")
+    private String bootUser;
 
     @Transactional(readOnly = true)
     @Override @Nonnull

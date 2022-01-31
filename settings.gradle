@@ -1,1 +1,2 @@
-rootProject.name = "tiny-url-service"
+rootProject.name = "tiny-url"
+include 'service', 'webclient'

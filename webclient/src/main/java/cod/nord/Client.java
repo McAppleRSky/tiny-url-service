@@ -2,12 +2,13 @@ package cod.nord;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 
-@SpringBootApplication
-public class Application {
+@SpringBootApplication(exclude = {SecurityAutoConfiguration.class })
+public class Client {
 
     public static void main(String[] args) {
-        SpringApplication.run(Application.class, args);
+        SpringApplication.run(Client.class, args);
     }
 
 }
@@ -22,3 +23,4 @@ public class Application {
     // https://github.com/Example-uPagge/jwt-server-spring
     // https://www.marcobehler.com/guides/spring-mvc
     // https://javascopes.com/spring-annotations-requestmapping-and-its-variants-e8cf47fd/
+    //  https://youtu.be/7uxROJ1nduk

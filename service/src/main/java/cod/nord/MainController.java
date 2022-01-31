@@ -13,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -25,12 +26,13 @@ import java.util.Map;
 @Controller
 public class MainController implements UserServletable, AuthServletable, UrlServletable {
 
-    private final AuthService authService;
-    private final UserService userService;
-    private final Map<String, String> urlService;
-
     @Value("${base.host.name}")
     private String defaultHostName;
+
+    private final AuthService authService;
+//    private final UserService userService;
+    private final Map<String, String> urlService;
+
 
     @GetMapping(value = "/api/0.0.1/user", produces = MediaType.APPLICATION_JSON_VALUE)
     @Override
@@ -70,6 +72,18 @@ public class MainController implements UserServletable, AuthServletable, UrlServ
         throw new NotImplementedException("delete /api/0.0.1/user/{id}");
     }
 
+    @GetMapping("/api/0.0.1/admin")
+    @Override
+    public String admin(Model model) {
+        model.addAttribute(
+                "serviceHost",
+                "/" );
+        model.addAttribute(
+                "serviceLoginPath",
+                "api/0.0.1/login" );
+        return "login";
+    }
+
     @PostMapping("/api/0.0.1/login")
     @Override
     public ResponseEntity<JwtResponse> login(JwtRequest authRequest) {
@@ -96,7 +110,7 @@ public class MainController implements UserServletable, AuthServletable, UrlServ
 
     @GetMapping
     @Override
-    public void redirectEmpty(HttpServletRequest request, HttpServletResponse response) {
+    public void pathEmpty(HttpServletRequest request, HttpServletResponse response) {
         response.setStatus(404);
         System.out.println();
     }
@@ -134,6 +148,8 @@ interface UserServletable {
 }
 
 interface AuthServletable {
+    String
+        admin(Model model);
     ResponseEntity<JwtResponse>
         login(JwtRequest authRequest);
     ResponseEntity<JwtResponse>
@@ -144,5 +160,5 @@ interface AuthServletable {
 
 interface UrlServletable {
     void redirect(HttpServletRequest request, HttpServletResponse response);
-    void redirectEmpty(HttpServletRequest request, HttpServletResponse response);
+    void pathEmpty(HttpServletRequest request, HttpServletResponse response);
 }

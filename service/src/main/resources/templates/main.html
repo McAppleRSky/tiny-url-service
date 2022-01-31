@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Tiny url client</title>
+    <script></script>
+    <style media="screen"></style>
+</head>
+<body>
+<header>
+</header>
+<aside>
+  <section>
+  </section>
+  <section>
+  </section>
+  <section>
+  </section>
+</aside>
+<main>
+  <article>
+    <div id="login">
+      <label>Enter login:</label>
+                <form action="${serviceHost}+${serviceLoginPath}" method="post">
+                    <table>
+                        <colgroup>
+                            <col>
+                        </colgroup>
+                        <tbody>
+                        <tr>
+                            <td>
+                                <label for="login">user name:</label>
+                            </td><td>
+                            <input type="text" id="login" name="login">
+                        </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <label for="password">user pass:</label>
+                            </td><td>
+                            <input type="text" id="password" name="password">
+                        </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    <input type="submit" value="Enter">
+                </form>
+    </div>
+    <div id="refresh">
+    </div>
+    <div id="links">
+    </div>
+  </article>
+</main>
+<footer>
+</footer>
+<div id="body">
+  <div id="container">
+    <div style="visibility: visible; overflow: visible; position: absolute; left: 100px; top: 100px;">
+      <div class="mainSection">
+        <label onclick="createForm()" style="outline: 2px solid #000;">(+) Add docs on this list</label>
+      </div>
+      <div class="mainSection">
+        <div class="">
+        </div>
+        <table id="mainTable" style="text-align: center;">
+          <thead>
+            <tr>
+              <th>${col_beautify[0]}</th>
+              <th>${col_beautify[15]}</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>${(values.id)!"-"}</td>
+              <td nowrap>${(values.urlInput)!"-"}</td>
+              <td>${(values.genOrgNumb)!"-"}</td>
+              <td>${(values.genOrgDate)!"-"}</td>
+              <td>${(values.outputNumb)!"-"}</td>
+              <td>${(values.outputDate)!"-"}</td>
+              <td nowrap>${(values.fromOwner)!"-"}</td>
+              <td>${(values.inputDate)!"-"}</td>
+              <td>${(values.inputNumb)!"-"}</td>
+              <td>${(values.worker)!"-"}</td>
+              <td>${(values.handPass)!"-"}</td>
+              <td>${(values.answerComp)!"-"}</td>
+              <td>${(values.answerDate)!"-"}</td>
+              <td>${(values.answerNumb)!"-"}</td>
+              <td nowrap>${(values.urlOutput)!"-"}</td>
+              <td>${(values.note)!"-"}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="mainSection">
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

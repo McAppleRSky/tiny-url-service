@@ -27,8 +27,7 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
 
-    @Value("${boot.security.user}")
-    private String bootUser;
+//    @Value("${boot.security.user}") private String bootUser;
 
     @Transactional(readOnly = true)
     @Override @Nonnull

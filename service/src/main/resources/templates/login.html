@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Tiny url client</title>
+    <script></script>
+    <style media="screen"></style>
+</head>
+<body>
+<div id="body">
+  <div id="container">
+    <div style="visibility: visible; overflow: visible; position: absolute; left: 100px; top: 100px;">
+        <div class="mainSection">
+            <label>Tiny url</label>
+        </div>
+        <div class="mainSection">
+            <div class="login">
+                <label>Enter login:</label>
+                <form th:action="${serviceHost}+${serviceLoginPath}" method="post">
+                    <table>
+                        <colgroup>
+                            <col>
+                        </colgroup>
+                        <tbody>
+                        <tr>
+                            <td>
+                                <label for="login">user name:</label>
+                            </td><td>
+                            <input type="text" id="login" name="login">
+                        </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <label for="password">user pass:</label>
+                            </td><td>
+                            <input type="text" id="password" name="password">
+                        </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    <input type="submit" value="Enter">
+                </form>
+            </div>
+        </div>
+        <div class="mainSection">
+            <label>Tiny url</label>
+        </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

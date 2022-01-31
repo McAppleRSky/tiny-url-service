@@ -1,7 +1,8 @@
 package cod.nord.service;
 
-import cod.nord.repository.dao.UserDao;
+import cod.nord.repository.UserRepository;
 import cod.nord.repository.entity.User;
+import cod.nord.service.model.UserHelper;
 import cod.nord.service.model.UserRequest;
 import cod.nord.service.model.UserResponse;
 import lombok.RequiredArgsConstructor;
@@ -11,16 +12,20 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.persistence.EntityNotFoundException;
 
 import java.util.List;
 import java.util.Optional;
 
+import static java.util.Optional.ofNullable;
+import static java.util.stream.Collectors.toList;
+
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
 
-    private final UserDao personDao;
+    private final UserRepository userRepository;
 
     @Value("${boot.security.user}")
     private String bootUser;
@@ -28,8 +33,10 @@ public class UserServiceImpl implements UserService {
     @Transactional(readOnly = true)
     @Override @Nonnull
     public List<UserResponse> findAll() {
-//        return personDao.findAll().stream().map(UserHelper::buildResponse).collect(toList());
-        throw new NotImplementedException("List<UserResponse> findAll()");
+//        throw new NotImplementedException("List<UserResponse> findAll()");
+        return userRepository.findAll().stream()
+                .map(UserHelper::buildResponse)
+                .collect(toList());
     }
 
     @Transactional(readOnly = true)
@@ -45,34 +52,34 @@ public class UserServiceImpl implements UserService {
         creating.setName(requested.getName());
         creating.setEmail(requested.getEmail());
         creating.setPassword(requested.getPassword());
-        User created = personDao.save(creating);
+        User created = userRepository.save(creating);
         return created.getId();
     }
 
     @Transactional
     @Override @Nonnull
     public UserResponse update(int id, @Nonnull UserRequest requested) {
-        User updating = personDao.findById(id);
+        User updating = userRepository.findById(id);
         if (updating==null){
             throw new EntityNotFoundException("User '" + id + "' not found");
         } else {
             updating.setEmail(requested.getEmail());
             updating.setPassword(requested.getPassword());
-            personDao.update(updating);
+            userRepository.update(updating);
         }
         return getById(id);
     }
 
     @Transactional
-    @Override
+    @Override @Nonnull
     public void delete(int id) {
-        personDao.delete(id);
+        userRepository.delete(id);
     }
 
-    @Override
-    public Optional<User> getByLogin(String username) {
-        findAll().stream().findAny();
-        throw new NotImplementedException("User getByLogin(String username)");
+    @Transactional(readOnly = true)
+    @Override  @Nullable
+    public Optional<User> getByLogin(String login) {
+        return ofNullable(userRepository.findByLogin(login));
     }
 
 }

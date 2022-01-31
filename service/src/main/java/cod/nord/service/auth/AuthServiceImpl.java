@@ -1,5 +1,6 @@
 package cod.nord.service.auth;
 
+import cod.nord.repository.UserRepository;
 import cod.nord.repository.entity.User;
 import cod.nord.service.UserService;
 import cod.nord.service.auth.model.JwtRequest;
@@ -11,6 +12,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+
+import static java.util.Optional.ofNullable;
 
 @Service
 @RequiredArgsConstructor

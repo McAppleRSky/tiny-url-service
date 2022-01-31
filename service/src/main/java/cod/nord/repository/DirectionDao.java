@@ -1,8 +1,8 @@
-package cod.nord.repository.dao;
+package cod.nord.repository;
 
 import cod.nord.repository.entity.Direction;
 import org.springframework.data.repository.NoRepositoryBean;
 
 @NoRepositoryBean
-public interface DirectionDao extends IDao<Direction, Integer> {
+interface DirectionDao extends IDao<Direction, Integer> {
 }

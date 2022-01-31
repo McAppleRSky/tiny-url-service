@@ -23,7 +23,7 @@ public interface UserService {
 
     void delete(int id);
 
-    Optional<User> getByLogin(String username);
+    Optional<User> getByLogin(String login);
 
     /*void addPersonToDepartment(int departmentId, int personId);
     void removePersonFromDepartment(int departmentId, int personId);

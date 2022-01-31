@@ -73,9 +73,9 @@ public class MainController implements UserServletable, AuthServletable, UrlServ
     @PostMapping("/api/0.0.1/login")
     @Override
     public ResponseEntity<JwtResponse> login(JwtRequest authRequest) {
-        throw new NotImplementedException("login /api/0.0.1/login");
-//        final JwtResponse token = authService.login(authRequest);
-//        return ResponseEntity.ok(token);
+//        throw new NotImplementedException("login /api/0.0.1/login");
+        final JwtResponse token = authService.login(authRequest);
+        return ResponseEntity.ok(token);
     }
 
     @PostMapping("/api/0.0.1/token")

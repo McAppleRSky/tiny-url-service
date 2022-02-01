@@ -13,7 +13,7 @@ import java.sql.Timestamp;
 @Getter @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Direction {
+public class Link {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -25,10 +25,11 @@ public class Direction {
     @Column(unique=true, nullable=false, length=120)
     @Size(min = 5, max = 120)
     private String url;
-    Timestamp expire;
+
+    private Timestamp expire;
 
     @ManyToOne
-    @JoinColumn(name="usr_id", nullable=false)
-    private User user;
+    @JoinColumn(name="oper_id", nullable=false)
+    private Oper oper;
 
 }

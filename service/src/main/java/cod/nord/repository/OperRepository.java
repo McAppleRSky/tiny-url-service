@@ -1,13 +1,13 @@
 package cod.nord.repository;
 
-import cod.nord.repository.entity.User;
+import cod.nord.repository.entity.Oper;
 import org.springframework.data.repository.NoRepositoryBean;
 
 import java.util.Optional;
 
 @NoRepositoryBean
-public interface UserRepository extends IDao<User, Integer> {
+public interface OperRepository extends IDao<Oper, Integer> {
 
-    User findByLogin(String login);
+    Oper findByLogin(String login);
 
 }

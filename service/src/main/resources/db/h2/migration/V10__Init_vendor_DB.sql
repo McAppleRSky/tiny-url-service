@@ -1,38 +1,38 @@
-CREATE SEQUENCE hibernate_sequence start 1 increment 1;
+CREATE SEQUENCE hibernate_sequence start with 1 increment by 1;
 
-CREATE TABLE direction (
-    id int4 NOT NULL,
+CREATE TABLE link (
+    id integer NOT NULL,
     path varchar(3) NOT NULL,
     url varchar(120) NOT NULL,
     expire timestamp,
-    usr_id int4 NOT NULL,
+    oper_id integer NOT NULL,
     PRIMARY KEY (id) );
 
-CREATE TABLE usr (
-    id int4 NOT NULL,
+CREATE TABLE oper (
+    id integer NOT NULL,
     email varchar(128),
     login varchar(32) NOT NULL,
     name varchar(75) NOT NULL,
     password varchar(16) NOT NULL,
     PRIMARY KEY (id) );
 
-CREATE TABLE user_role (
-    user_id int4 NOT NULL,
+CREATE TABLE oper_role (
+    oper_id integer NOT NULL,
     roles varchar(8) );
 
-ALTER TABLE if exists direction
-    ADD CONSTRAINT direction_path_uk unique (path);
+ALTER TABLE link
+    ADD CONSTRAINT link_path_uk unique (path);
 
-ALTER TABLE if exists direction
-    ADD CONSTRAINT direction_url_uk unique (url);
+ALTER TABLE link
+    ADD CONSTRAINT link_url_uk unique (url);
 
-ALTER TABLE if exists usr
-    ADD CONSTRAINT usr_login_uk unique (login);
+ALTER TABLE oper
+    ADD CONSTRAINT oper_login_uk unique (login);
 
-ALTER TABLE if exists direction
-    ADD CONSTRAINT direction_user_fk
-    FOREIGN KEY (usr_id) REFERENCES usr;
+ALTER TABLE link
+    ADD CONSTRAINT link_oper_fk
+    FOREIGN KEY (oper_id) REFERENCES oper;
 
-ALTER TABLE if exists user_role
-    ADD CONSTRAINT user_role_user_fk
-    FOREIGN KEY (user_id) REFERENCES usr;
+ALTER TABLE oper_role
+    ADD CONSTRAINT oper_role_oper_fk
+    FOREIGN KEY (oper_id) REFERENCES oper

@@ -1,6 +1,6 @@
 package cod.nord.repository;
 
-import cod.nord.repository.entity.User;
+import cod.nord.repository.entity.Oper;
 import org.springframework.stereotype.Repository;
 
 import javax.annotation.Nonnull;
@@ -11,50 +11,50 @@ import javax.persistence.TypedQuery;
 import java.util.List;
 
 @Repository
-public class UserRepositoryImpl implements UserRepository {
+public class OperRepositoryImpl implements OperRepository {
 
     @PersistenceContext
     private EntityManager entityManager;
 
     @Nullable
     @Override
-    public User findById(@Nonnull Integer id) {
-        return entityManager.find(User.class, id);
+    public Oper findById(@Nonnull Integer id) {
+        return entityManager.find(Oper.class, id);
     }
 
     @Nonnull
     @Override
-    public List<User> findAll() {
-        return entityManager.createQuery("SELECT u FROM user u").getResultList();
+    public List<Oper> findAll() {
+        return entityManager.createQuery("SELECT o FROM Oper o").getResultList();
     }
 
     @Nonnull
     @Override
-    public User update(@Nonnull User user) {
+    public Oper update(@Nonnull Oper user) {
         return entityManager.merge(user);
     }
 
     @Nullable
     @Override
-    public User delete(@Nonnull Integer id) {
-        User deleted = entityManager.find(User.class, id);
+    public Oper delete(@Nonnull Integer id) {
+        Oper deleted = entityManager.find(Oper.class, id);
         entityManager.remove(deleted);
         return deleted;
     }
 
     @Nonnull
     @Override
-    public User save(@Nonnull User created) {
+    public Oper save(@Nonnull Oper created) {
         entityManager.persist(created);
         return created;
     }
 
     @Nullable
     @Override
-    public User findByLogin(@Nonnull String login) {
-        TypedQuery<User> query = entityManager.createQuery( //
-                "SELECT u FROM User u WHERE u.login=:login",
-                User.class );
+    public Oper findByLogin(@Nonnull String login) {
+        TypedQuery<Oper> query = entityManager.createQuery( //
+                "SELECT o FROM Oper o WHERE o.login=:login",
+                Oper.class );
         return query.setParameter("login", login).getSingleResult();
     }
 

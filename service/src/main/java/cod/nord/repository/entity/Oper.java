@@ -9,24 +9,21 @@ import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
-import java.io.Serializable;
-import java.util.Collection;
 import java.util.Set;
 
 @Entity
-@Table(name="usr")
 @Getter @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class User //implements UserDetails
+public class Oper //implements UserDetails
 {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
 
-    @NotBlank(message = "username cannot be empty")
-    @Column(nullable = false, length=75)
+    @NotBlank(message = "name cannot be empty")
+    @Column(length=75)
     @Size(min = 3)
     private String name;
 
@@ -47,14 +44,14 @@ public class User //implements UserDetails
     private String email;
 
     @ElementCollection(targetClass = Role.class, fetch = FetchType.EAGER)
-    @CollectionTable(name = "user_role", joinColumns = @JoinColumn(name = "user_id"))
+    @CollectionTable(name = "oper_role", joinColumns = @JoinColumn(name = "oper_id"))
     @Enumerated(EnumType.STRING)
     @Column(length=8)
     private Set<Role> roles;
 
-    @OneToMany(mappedBy="user", cascade=CascadeType.ALL)
+    @OneToMany(mappedBy="oper", cascade=CascadeType.ALL)
 //    @OneToMany(cascade = {CascadeType.PERSIST})
-    private Set<Direction> directions;
+    private Set<Link> directions;
 
     /* @Override
     public boolean isAccountNonExpired() {

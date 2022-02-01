@@ -1,18 +1,17 @@
 package cod.nord.service.model;
 
 import lombok.Data;
-import lombok.RequiredArgsConstructor;
 import lombok.experimental.Accessors;
 
-import javax.validation.constraints.*;
+import javax.validation.constraints.NotEmpty;
 
 @Data
 @Accessors(chain = true)
-public class UserRequest {
+public class OperRequest {
 
     @NotEmpty(message = "{field.is.empty}")
     private String name;
-    private String logname;
+    private String login;
     private String password;
     private String email;
 

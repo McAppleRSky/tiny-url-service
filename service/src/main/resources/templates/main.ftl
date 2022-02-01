@@ -224,62 +224,44 @@
                 <thead>
                   <tr>
                     <th>
-                      <!-- //${col_beautify[0]} -->
                     </th>
                     <th>
-                      <!-- //${col_beautify[15]} -->
                     </th>
                   </tr>
                 </thead>
                 <tbody>
                   <tr>
                     <td>
-                      <!-- ${(values.id)!"-"} -->
                     </td>
                     <td nowrap>
-                      <!-- ${(values.urlInput)!"-"} -->
                     </td>
                     <td>
-                      <!-- ${(values.genOrgNumb)!"-"} -->
                     </td>
                     <td>
-                      <!-- ${(values.genOrgDate)!"-"} -->
                     </td>
                     <td>
-                      <!-- ${(values.outputNumb)!"-"} -->
                     </td>
                     <td>
-                      <!-- ${(values.outputDate)!"-"} -->
                     </td>
                     <td nowrap>
-                      <!-- ${(values.fromOwner)!"-"} -->
                     </td>
                     <td>
-                      <!-- ${(values.inputDate)!"-"} -->
                     </td>
                     <td>
-                      <!-- ${(values.inputNumb)!"-"} -->
                     </td>
                     <td>
-                      <!-- ${(values.worker)!"-"} -->
                     </td>
                     <td>
-                      <!-- ${(values.handPass)!"-"} -->
                     </td>
                     <td>
-                      <!-- ${(values.answerComp)!"-"} -->
                     </td>
                     <td>
-                      <!-- ${(values.answerDate)!"-"} -->
                     </td>
                     <td>
-                      <!-- ${(values.answerNumb)!"-"} -->
                     </td>
                     <td nowrap>
-                      <!-- ${(values.urlOutput)!"-"} -->
                     </td>
                     <td>
-                      <!-- ${(values.note)!"-"} -->
                     </td>
                   </tr>
                 </tbody>

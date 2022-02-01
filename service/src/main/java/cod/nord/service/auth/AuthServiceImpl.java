@@ -1,8 +1,7 @@
 package cod.nord.service.auth;
 
-import cod.nord.repository.UserRepository;
-import cod.nord.repository.entity.User;
-import cod.nord.service.UserService;
+import cod.nord.repository.entity.Oper;
+import cod.nord.service.OperService;
 import cod.nord.service.auth.model.JwtRequest;
 import cod.nord.service.auth.model.JwtResponse;
 import io.jsonwebtoken.Claims;
@@ -10,16 +9,15 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-
-import static java.util.Optional.ofNullable;
 
 @Service
 @RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {
 
-    private final UserService userService;
+    private final OperService operService;
     private final JwtProvider jwtProvider;
     private final Map<String, String> mapLoginRefresh = new ConcurrentHashMap<>();
 
@@ -28,12 +26,12 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public JwtResponse login(@NonNull JwtRequest authRequest) {
-        final User user = userService.getByLogin(authRequest.getLogin())
+        final Oper oper = operService.getByLogin(authRequest.getLogin())
                 .orElseThrow(() -> new AuthException("User not found"));
-        if (user.getPassword().equals(authRequest.getPassword())) {
-            final String accessToken = jwtProvider.generateAccessToken(user);
-            final String refreshToken = jwtProvider.generateRefreshToken(user);
-            mapLoginRefresh.put(user.getLogin(), refreshToken);
+        if (oper.getPassword().equals(authRequest.getPassword())) {
+            final String accessToken = jwtProvider.generateAccessToken(oper);
+            final String refreshToken = jwtProvider.generateRefreshToken(oper);
+            mapLoginRefresh.put(oper.getLogin(), refreshToken);
             return new JwtResponse(accessToken, refreshToken);
         } else {
             throw new AuthException("Invalid password");
@@ -47,9 +45,9 @@ public class AuthServiceImpl implements AuthService {
             final String login = claims.getSubject();
             final String saveRefreshToken = mapLoginRefresh.get(login);
             if (saveRefreshToken != null && saveRefreshToken.equals(refreshToken)) {
-                final User user = userService.getByLogin(login)
+                final Oper oper = operService.getByLogin(login)
                         .orElseThrow(() -> new AuthException("User not found"));
-                final String accessToken = jwtProvider.generateAccessToken(user);
+                final String accessToken = jwtProvider.generateAccessToken(oper);
                 return new JwtResponse(accessToken, null);
             }
         }
@@ -62,11 +60,11 @@ public class AuthServiceImpl implements AuthService {
             final String login = claims.getSubject();
             final String saveRefreshToken = mapLoginRefresh.get(login);
             if (saveRefreshToken != null && saveRefreshToken.equals(refreshToken)) {
-                final User user = userService.getByLogin(login)
+                final Oper oper = operService.getByLogin(login)
                         .orElseThrow(() -> new AuthException("User not found"));
-                final String accessToken = jwtProvider.generateAccessToken(user);
-                final String newRefreshToken = jwtProvider.generateRefreshToken(user);
-                mapLoginRefresh.put(user.getLogin(), newRefreshToken);
+                final String accessToken = jwtProvider.generateAccessToken(oper);
+                final String newRefreshToken = jwtProvider.generateRefreshToken(oper);
+                mapLoginRefresh.put(oper.getLogin(), newRefreshToken);
                 return new JwtResponse(accessToken, newRefreshToken);
             }
         }

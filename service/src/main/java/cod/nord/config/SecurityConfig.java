@@ -23,13 +23,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final JwtFilter jwtFilter;
 
-    /*@Value("${boot.security.user}")
+    @Value("${boot.security.user}")
     private String bootUser;
 
     @Value("${boot.security.password}")
     private String bootPassword;
 
-    private String bootRole = "USER";*/
+    @Value("${boot.security.role}")
+    private String bootRole;
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
@@ -40,7 +41,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                     .and()
                         .authorizeRequests()
-                        .antMatchers("/api/0.0.1/login", "/api/0.0.1/token", "/api/0.0.1/admin", "/*").permitAll()
+                        .antMatchers("/api/0.0.1/login", "/api/0.0.1/token", "/api/0.0.1/operate", "/*").permitAll()
                         .anyRequest().authenticated()
                     .and()
                         .addFilterAfter(jwtFilter, UsernamePasswordAuthenticationFilter.class);
@@ -51,11 +52,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         return new BCryptPasswordEncoder();
     }
 
-    /*@Autowired
+    @Autowired
     public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
-        auth
-                .inMemoryAuthentication()
-                .withUser(bootUser).password(bootPassword).roles(bootRole);
-    }*/
+        auth.inMemoryAuthentication()
+                .withUser(bootUser)
+                .password(bootPassword)
+                .roles(bootRole);
+    }
 
 }

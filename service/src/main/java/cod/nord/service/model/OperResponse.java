@@ -5,7 +5,7 @@ import lombok.experimental.Accessors;
 
 @Data
 @Accessors(chain = true)
-public class UserResponse {
+public class OperResponse {
 
     private Integer id;
     private String name;

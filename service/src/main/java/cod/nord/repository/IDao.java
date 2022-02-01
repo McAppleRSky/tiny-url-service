@@ -1,6 +1,5 @@
 package cod.nord.repository;
 
-import cod.nord.repository.entity.User;
 import org.springframework.data.repository.NoRepositoryBean;
 
 import javax.annotation.Nonnull;

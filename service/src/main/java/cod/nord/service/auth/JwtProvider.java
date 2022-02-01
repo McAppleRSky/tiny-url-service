@@ -1,6 +1,6 @@
 package cod.nord.service.auth;
 
-import cod.nord.repository.entity.User;
+import cod.nord.repository.entity.Oper;
 import io.jsonwebtoken.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -27,12 +27,12 @@ public class JwtProvider {
         this.jwtRefreshSecret = jwtRefreshSecret;
     }
 
-    public String generateAccessToken(@NonNull User user) {
+    public String generateAccessToken(@NonNull Oper oper) {
         final LocalDateTime now = LocalDateTime.now();
         final Instant accessExpirationInstant = now.plusMinutes(5).atZone(ZoneId.systemDefault()).toInstant();
         final Date accessExpiration = Date.from(accessExpirationInstant);
         final String accessToken = Jwts.builder()
-                .setSubject(user.getLogin())
+                .setSubject(oper.getLogin())
                 .setExpiration(accessExpiration)
                 .signWith(SignatureAlgorithm.HS512, jwtAccessSecret)
 //                .claim("roles", user.getRoles())
@@ -41,12 +41,12 @@ public class JwtProvider {
         return accessToken;
     }
 
-    public String generateRefreshToken(@NonNull User user) {
+    public String generateRefreshToken(@NonNull Oper oper) {
         final LocalDateTime now = LocalDateTime.now();
         final Instant refreshExpirationInstant = now.plusDays(30).atZone(ZoneId.systemDefault()).toInstant();
         final Date refreshExpiration = Date.from(refreshExpirationInstant);
         final String refreshToken = Jwts.builder()
-                .setSubject(user.getLogin())
+                .setSubject(oper.getLogin())
                 .setExpiration(refreshExpiration)
                 .signWith(SignatureAlgorithm.HS512, jwtRefreshSecret)
                 .compact();

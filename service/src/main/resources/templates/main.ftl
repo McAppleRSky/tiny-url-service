@@ -65,25 +65,43 @@
     const loginXHR = new XMLHttpRequest();
     var loginForm;
     var tokens;
+    var log;
+    var takeEvent;
+
+    function handleEvent(e) {
+      log.textContent = log.textContent + " (" + e.type + ") (" + e.loaded + ") bytes transferred"
+    }
+    loginXHR.addEventListener('loadstart', handleEvent);
+    loginXHR.addEventListener('loadend', handleEvent);
+    loginXHR.addEventListener('progress', handleEvent);
     loginXHR.addEventListener("error", (event) => {
+      handleEvent(event);
       alert('Oops! Login went wrong.')
     });
+    loginXHR.addEventListener('error', handleEvent);
+    // loginXHR.addEventListener('abort', handleEvent);
     loginXHR.addEventListener("load", (event) => {
-      tokens = JSON.parce(event.target.responseText)
-    });
+        handleEvent(event);
+        takeEvent = event;
+        tokens = JSON.parse(event.target.responseText);
+        alert("sendLogin, response : " + tokens);
+      }
+
+    );
 
     function sendLogin() {
-      alert("sendLogin");
       loginXHR.open("POST", "/api/0.0.1/login");
       // let formData = new FormData(loginForm);
       loginXHR.send(new FormData(loginForm));
     };
     document.addEventListener("DOMContentLoaded", () => {
       loginForm = document.forms.login_form;
+      log = document.querySelector('.event-log');
       loginForm.addEventListener("submit", (event) => {
         event.preventDefault();
         sendLogin();
       })
+
     })
   </script>
   <style type="text/css" media="screen">
@@ -126,26 +144,29 @@
   </header>
   <aside>
     <h2>Phase:</h2>
-      <section>
-        <form name="content_selector_form">
-          <p>
-            <input name="content_selector" type="radio" value="login" id="select_login" onchange="selectContent(this)">
-            <label for="select_login">Login</label>
-          </p>
-          <p>
-            <input name="content_selector" type="radio" value="refresh" id="select_refresh" onchange="selectContent(this)">
-            <label for="select_refresh">Refresh</label>
-          </p>
-          <p>
-            <input name="content_selector" type="radio" value="link" id="select_link" onchange="selectContent(this)">
-            <label for="select_link">Link</label>
-          </p>
-          <p>
-            <input name="content_selector" type="radio" value="user" id="select_radio" onchange="selectContent(this)">
-            <label for="select_radio">User</label>
-          </p>
-        </form>
-      </section>
+    <section>
+      <form name="content_selector_form">
+        <p>
+          <input name="content_selector" type="radio" value="login" id="select_login" onchange="selectContent(this)">
+          <label for="select_login">Login</label>
+        </p>
+        <p>
+          <input name="content_selector" type="radio" value="refresh" id="select_refresh" onchange="selectContent(this)">
+          <label for="select_refresh">Refresh</label>
+        </p>
+        <p>
+          <input name="content_selector" type="radio" value="link" id="select_link" onchange="selectContent(this)">
+          <label for="select_link">Link</label>
+        </p>
+        <p>
+          <input name="content_selector" type="radio" value="user" id="select_radio" onchange="selectContent(this)">
+          <label for="select_radio">User</label>
+        </p>
+      </form>
+    </section>
+    <section>
+      <textarea readonly class="event-log"></textarea>
+    </section>
   </aside>
   <main>
     <article>

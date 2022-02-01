@@ -65,25 +65,50 @@
     const loginXHR = new XMLHttpRequest();
     var loginForm;
     var tokens;
+    var log;
+    var takeObj;
+
+    function handleEvent(e) {
+      log.textContent = log.textContent + " (" + e.type + ") (" + e.loaded + ") bytes transferred"
+    }
+    loginXHR.addEventListener('loadstart', handleEvent);
+    loginXHR.addEventListener('loadend', handleEvent);
+    loginXHR.addEventListener('progress', handleEvent);
     loginXHR.addEventListener("error", (event) => {
+      handleEvent(event);
       alert('Oops! Login went wrong.')
     });
+    loginXHR.addEventListener('error', handleEvent);
+    // loginXHR.addEventListener('abort', handleEvent);
     loginXHR.addEventListener("load", (event) => {
-      tokens = JSON.parce(event.target.responseText)
-    });
+        handleEvent(event);
+        takeEvent = event;
+        tokens = JSON.parse(event.target.responseText);
+        alert("sendLogin, response : " + tokens);
+      }
+
+    );
 
     function sendLogin() {
-      alert("sendLogin");
-      loginXHR.open("POST", "/api/0.0.1/login");
+      let formData = new FormData(loginForm);
+      loginForm.reset();
+      if (formData.get("login")=="" || formData.get("password")=="") {
+        return;
+      }
+      loginXHR.open("POST", "/api/0.0.1/login", true, formData.get("login"), formData.get("password"));
+      takeObj=JSON.parse("{}");
+
       // let formData = new FormData(loginForm);
-      loginXHR.send(new FormData(loginForm));
+      loginXHR.send(takeObj);
     };
     document.addEventListener("DOMContentLoaded", () => {
       loginForm = document.forms.login_form;
+      log = document.querySelector('.event-log');
       loginForm.addEventListener("submit", (event) => {
         event.preventDefault();
         sendLogin();
       })
+
     })
   </script>
   <style type="text/css" media="screen">
@@ -126,26 +151,29 @@
   </header>
   <aside>
     <h2>Phase:</h2>
-      <section>
-        <form name="content_selector_form">
-          <p>
-            <input name="content_selector" type="radio" value="login" id="select_login" onchange="selectContent(this)">
-            <label for="select_login">Login</label>
-          </p>
-          <p>
-            <input name="content_selector" type="radio" value="refresh" id="select_refresh" onchange="selectContent(this)">
-            <label for="select_refresh">Refresh</label>
-          </p>
-          <p>
-            <input name="content_selector" type="radio" value="link" id="select_link" onchange="selectContent(this)">
-            <label for="select_link">Link</label>
-          </p>
-          <p>
-            <input name="content_selector" type="radio" value="user" id="select_radio" onchange="selectContent(this)">
-            <label for="select_radio">User</label>
-          </p>
-        </form>
-      </section>
+    <section>
+      <form name="content_selector_form">
+        <p>
+          <input name="content_selector" type="radio" value="login" id="select_login" onchange="selectContent(this)">
+          <label for="select_login">Login</label>
+        </p>
+        <p>
+          <input name="content_selector" type="radio" value="refresh" id="select_refresh" onchange="selectContent(this)">
+          <label for="select_refresh">Refresh</label>
+        </p>
+        <p>
+          <input name="content_selector" type="radio" value="link" id="select_link" onchange="selectContent(this)">
+          <label for="select_link">Link</label>
+        </p>
+        <p>
+          <input name="content_selector" type="radio" value="user" id="select_radio" onchange="selectContent(this)">
+          <label for="select_radio">User</label>
+        </p>
+      </form>
+    </section>
+    <section>
+      <textarea readonly class="event-log"></textarea>
+    </section>
   </aside>
   <main>
     <article>
@@ -224,62 +252,44 @@
                 <thead>
                   <tr>
                     <th>
-                      <!-- //${col_beautify[0]} -->
                     </th>
                     <th>
-                      <!-- //${col_beautify[15]} -->
                     </th>
                   </tr>
                 </thead>
                 <tbody>
                   <tr>
                     <td>
-                      <!-- ${(values.id)!"-"} -->
                     </td>
                     <td nowrap>
-                      <!-- ${(values.urlInput)!"-"} -->
                     </td>
                     <td>
-                      <!-- ${(values.genOrgNumb)!"-"} -->
                     </td>
                     <td>
-                      <!-- ${(values.genOrgDate)!"-"} -->
                     </td>
                     <td>
-                      <!-- ${(values.outputNumb)!"-"} -->
                     </td>
                     <td>
-                      <!-- ${(values.outputDate)!"-"} -->
                     </td>
                     <td nowrap>
-                      <!-- ${(values.fromOwner)!"-"} -->
                     </td>
                     <td>
-                      <!-- ${(values.inputDate)!"-"} -->
                     </td>
                     <td>
-                      <!-- ${(values.inputNumb)!"-"} -->
                     </td>
                     <td>
-                      <!-- ${(values.worker)!"-"} -->
                     </td>
                     <td>
-                      <!-- ${(values.handPass)!"-"} -->
                     </td>
                     <td>
-                      <!-- ${(values.answerComp)!"-"} -->
                     </td>
                     <td>
-                      <!-- ${(values.answerDate)!"-"} -->
                     </td>
                     <td>
-                      <!-- ${(values.answerNumb)!"-"} -->
                     </td>
                     <td nowrap>
-                      <!-- ${(values.urlOutput)!"-"} -->
                     </td>
                     <td>
-                      <!-- ${(values.note)!"-"} -->
                     </td>
                   </tr>
                 </tbody>

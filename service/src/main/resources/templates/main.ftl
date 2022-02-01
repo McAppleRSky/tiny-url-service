@@ -63,10 +63,11 @@
     }
     // const loginForm = document.getElementById("myForm");
     const loginXHR = new XMLHttpRequest();
+    const accessXHR= new XMLHttpRequest();
     var loginForm;
     var tokens;
-    var log;
-    var takeEvent;
+    var sendRefresh;
+    var temp;
 
     function handleEvent(e) {
       log.textContent = log.textContent + " (" + e.type + ") (" + e.loaded + ") bytes transferred"
@@ -82,26 +83,50 @@
     // loginXHR.addEventListener('abort', handleEvent);
     loginXHR.addEventListener("load", (event) => {
         handleEvent(event);
-        takeEvent = event;
+        document.getElementById('login_status').textContent = loginXHR.status + " " + loginXHR.statusText;
         tokens = JSON.parse(event.target.responseText);
-        alert("sendLogin, response : " + tokens);
-      }
-
-    );
+        document.getElementById('access_token').textContent = tokens.accessToken;
+        document.getElementById('refresh_token').textContent = tokens.refreshToken;
+    });
+    accessXHR.addEventListener("load", (event) => {
+        handleEvent(event);
+        document.getElementById('refresh_status').textContent = accessXHR.status + " " + accessXHR.statusText;
+        temp = event.target.responseText;
+        // tokens = JSON.parse(event.target.responseText);
+        // document.getElementById('access_token').textContent = tokens.accessToken;
+        // document.getElementById('refresh_token').textContent = tokens.refreshToken;
+    });
 
     function sendLogin() {
+      let formData = new FormData(loginForm);
+      loginForm.reset();
+      if (formData.get("login") == "" || formData.get("password") == "") {
+        return;
+      }
       loginXHR.open("POST", "/api/0.0.1/login");
       // let formData = new FormData(loginForm);
-      loginXHR.send(new FormData(loginForm));
+      loginXHR.send(formData);
     };
+    function getAccess() {
+      if (tokens.refreshToken=="") {
+        return;
+      }
+      accessXHR.open("POST", "/api/0.0.1/token");
+      let json = JSON.stringify({refreshToken: tokens.refreshToken});
+      accessXHR.setRequestHeader('Content-type', 'application/json; charset=utf-8');
+      accessXHR.send(json);
+    }
     document.addEventListener("DOMContentLoaded", () => {
       loginForm = document.forms.login_form;
+      sendRefresh = document.getElementById('send_refresh');
       log = document.querySelector('.event-log');
       loginForm.addEventListener("submit", (event) => {
         event.preventDefault();
         sendLogin();
-      })
-
+      });
+      sendRefresh.addEventListener('click', () =>{
+        getAccess();
+      });
     })
   </script>
   <style type="text/css" media="screen">
@@ -165,7 +190,6 @@
       </form>
     </section>
     <section>
-      <textarea readonly class="event-log"></textarea>
     </section>
   </aside>
   <main>
@@ -207,29 +231,14 @@
             </tbody>
           </table>
         </form>
-        <script type="text/javascript">
-          // let loginForm = new FormData(document.forms.login_form);
-          // let loginXHR = new XMLHttpRequest();
-          // let json = JSON;
-          // loginXHR.open("POST", "/api/0.0.1/login");
-          // loginXHR.send(formData);
-          //
-          // const loginXHR = new XMLHttpRequest();
-          //
-          // function sendLogin() {
-          //   loginXHR.addEventListener("load", function(event) {
-          //     alert(event.target.responseText);
-          //   });
-          //   loginXHR.addEventListener("error", function(event) {
-          //     alert('Oops! Something went wrong.');
-          //   });
-          //   XHR.open("POST", "/api/0.0.1/login");
-          //   XHR.send(FD);
-          // }
-        </script>
+        <p>Login status :
+          <label id="login_status">-</label>
+        </p>
       </div>
       <div id="content_refresh" class="content_selecting hidden">
         <h1>Refresh token</h1>
+        <label for="sendRefresh">Get access token:</label>
+        <input type="button" id="send_refresh" value="send refresh token">
       </div>
       <div id="content_link" class="content_selecting hidden">
         <h1>Content links</h1>
@@ -296,34 +305,20 @@
       <div id="content_user" class="content_selecting hidden">
         <h1>Content users</h1>
       </div>
-      <script type="text/javascript">
-        // window.addEventListener("load", function() {
-        //       function sendLogin() {
-        //         const FD = new FormData(form);
-        //
-        //         // Define what happens on successful data submission
-        //         XHR.addEventListener("load", function(event) {
-        //           alert(event.target.responseText);
-        //         });
-        //
-        //         // Define what happens in case of error
-        //         XHR.addEventListener("error", function(event) {
-        //           alert('Oops! Something went wrong.');
-        //         });
-        //
-        //         // Set up our request
-        //         XHR.open("POST", "https://example.com/cors.php");
-        //
-        //         // The data sent is what the user provided in the form
-        //         XHR.send(FD);
-        //       }
-        //
-        //     }
-      </script>
+    </article>
+    <article>
+      <h2>Access token</h2>
+      <label id="access_token">-</label>
+      <h2>Refresh token</h2>
+      <label id="refresh_token">-</label>
+      <p>refresh status :
+        <label id="refresh_status">-</label>
+      </p>
     </article>
   </main>
   <footer>
-    <h2>by McApple R. Sky</h2>
+    <h2>log area :</h2>
+    <textarea readonly class="event-log"></textarea>
   </footer>
 </body>
 

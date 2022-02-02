@@ -35,8 +35,8 @@ public class JwtProvider {
                 .setSubject(oper.getLogin())
                 .setExpiration(accessExpiration)
                 .signWith(SignatureAlgorithm.HS512, jwtAccessSecret)
-//                .claim("roles", user.getRoles())
-//                .claim("name", user.getName())
+                .claim("roles", oper.getRoles())
+                .claim("name", oper.getName())
                 .compact();
         return accessToken;
     }

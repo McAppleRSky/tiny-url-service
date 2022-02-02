@@ -85,13 +85,20 @@ public class MainController implements OperServletable, AuthServletable, UrlServ
 
     @PostMapping("/api/0.0.1/login")
     @Override
-    public ResponseEntity<JwtResponse> login(JwtRequest authRequest) {
+    public ResponseEntity<JwtResponse> login(
+            //@RequestBody
+            JwtRequest authRequest
+    ) {
 //        throw new NotImplementedException("login /api/0.0.1/login");
         final JwtResponse token = authService.login(authRequest);
         return ResponseEntity.ok(token);
     }
 
-    @PostMapping(path="/api/0.0.1/token", consumes = "application/json")
+    @PostMapping(
+//            path=
+                    "/api/0.0.1/token"
+//            , consumes = "application/json"
+    )
     @Override
     public ResponseEntity<JwtResponse> getNewAccessToken(@RequestBody RefreshJwtRequest request) {
 //        throw new NotImplementedException("token /api/0.0.1/token");
@@ -101,10 +108,10 @@ public class MainController implements OperServletable, AuthServletable, UrlServ
 
     @PostMapping("/api/0.0.1/refresh")
     @Override
-    public ResponseEntity<JwtResponse> getNewRefreshToken(RefreshJwtRequest request) {
-        throw new NotImplementedException("refresh /api/0.0.1/refresh");
-//        final JwtResponse token = authService.refresh(request.getRefreshToken());
-//        return ResponseEntity.ok(token);
+    public ResponseEntity<JwtResponse> getNewRefreshToken(@RequestBody RefreshJwtRequest request) {
+//        throw new NotImplementedException("refresh /api/0.0.1/refresh");
+        final JwtResponse token = authService.refresh(request.getRefreshToken());
+        return ResponseEntity.ok(token);
     }
 
     @GetMapping

@@ -29,6 +29,16 @@
           selectedAny.classList.remove("hidden");
           selectedAny.classList.remove("visible");
           break;
+        case 'refresh':
+          selectedAll = document.querySelectorAll(".content_selecting");
+          selectedAny = document.querySelector('#content_refresh');
+          selectedAll.forEach((element) => {
+            element.classList.remove("visible");
+            element.classList.add("hidden")
+          });
+          selectedAny.classList.remove("hidden");
+          selectedAny.classList.remove("visible");
+          break;
         case 'link':
           selectedAll = document.querySelectorAll(".content_selecting");
           selectedAny = document.querySelector('#content_link');
@@ -63,10 +73,16 @@
     }
     // const loginForm = document.getElementById("myForm");
     const loginXHR = new XMLHttpRequest();
-    const tokenXHR= new XMLHttpRequest();
+    const tokenXHR = new XMLHttpRequest();
+    const refreshXHR = new XMLHttpRequest();
     var loginForm;
     var tokens;
-    var sendToken;
+    // var sendToken;
+    var tokenButton;
+    var refresButton;
+    var refreshToken;
+    var accessToken;
+    var tokenStatus;
 
     function handleEvent(e) {
       log.textContent = log.textContent + " (" + e.type + ") (" + e.loaded + ") bytes transferred"
@@ -81,19 +97,26 @@
     loginXHR.addEventListener('error', handleEvent);
     // loginXHR.addEventListener('abort', handleEvent);
     loginXHR.addEventListener("load", (event) => {
-        handleEvent(event);
-        document.getElementById('login_status').textContent = loginXHR.status + " " + loginXHR.statusText;
-        tokens = JSON.parse(event.target.responseText);
-        document.getElementById('access_token').textContent = tokens.accessToken;
-        document.getElementById('refresh_token').textContent = tokens.refreshToken;
+      handleEvent(event);
+      tokenStatus.textContent = loginXHR.status + " " + loginXHR.statusText;
+      tokens = JSON.parse(event.target.responseText);
+      accessToken.textContent = tokens.accessToken;
+      refreshToken.textContent = tokens.refreshToken;
     });
     tokenXHR.addEventListener("load", (event) => {
-        handleEvent(event);
-        document.getElementById('token_status').textContent = tokenXHR.status + " " + tokenXHR.statusText;
-        let token = JSON.parse(event.target.responseText);
-        tokens.accessToken = token.accessToken;
-        document.getElementById('access_token').textContent = token.accessToken;
-        // document.getElementById('refresh_token').textContent = tokens.refreshToken;
+      handleEvent(event);
+      tokenStatus.textContent = tokenXHR.status + " " + tokenXHR.statusText;
+      let current = JSON.parse(event.target.responseText);
+      tokens.accessToken = current.accessToken;
+      accessToken.textContent = current.accessToken;
+      // document.getElementById('refresh_token').textContent = tokens.refreshToken;
+    });
+    refreshXHR.addEventListener("load", (event) => {
+      handleEvent(event);
+      tokenStatus.textContent = refreshXHR.status + " " + refreshXHR.statusText;
+      tokens = JSON.parse(event.target.responseText);
+      accessToken.textContent = tokens.accessToken;
+      refreshToken.textContent = tokens.refreshToken;
     });
 
     function sendLogin() {
@@ -106,25 +129,46 @@
       // let formData = new FormData(loginForm);
       loginXHR.send(formData);
     };
+
     function getAccess() {
-      if (tokens.refreshToken=="") {
+      if (tokens.refreshToken == "") {
         return;
       }
       tokenXHR.open("POST", "/api/0.0.1/token");
-      let token = {refreshToken:tokens.refreshToken};
+      let token = {refreshToken: tokens.refreshToken};
       tokenXHR.setRequestHeader('Content-type', 'application/json; charset=utf-8');
       tokenXHR.send(JSON.stringify(token));
     };
+
+    function getRefresh() {
+      if (tokens.refreshToken == "") {
+        return;
+      }
+      refreshXHR.open("POST", "/api/0.0.1/refresh");
+      let token = {refreshToken: tokens.refreshToken,
+        accessToken
+      };
+      refreshXHR.setRequestHeader('Authorization', 'Bearer ' + tokens.accessToken);
+      refreshXHR.setRequestHeader('Content-type', 'application/json; charset=utf-8');
+      refreshXHR.send(JSON.stringify(token));
+    };
     document.addEventListener("DOMContentLoaded", () => {
       loginForm = document.forms.login_form;
-      sendToken = document.getElementById('send_token');
+      accessToken = document.getElementById('access_token');
+      refreshToken = document.getElementById('refresh_token');
+      tokenStatus = document.getElementById('token_status');
+      tokenButton = document.getElementById('token_btn');
+      refreshButton = document.getElementById('refresh_btn');
       log = document.querySelector('.event-log');
       loginForm.addEventListener("submit", (event) => {
         event.preventDefault();
         sendLogin();
       });
-      sendToken.addEventListener('click', () =>{
+      token_btn.addEventListener('click', () => {
         getAccess();
+      });
+      refresh_btn.addEventListener('click', () => {
+        getRefresh();
       });
     })
   </script>
@@ -177,6 +221,10 @@
         <p>
           <input name="content_selector" type="radio" value="token" id="select_token" onchange="selectContent(this)">
           <label for="select_token">Token</label>
+        </p>
+        <p>
+          <input name="content_selector" type="radio" value="refresh" id="select_refresh" onchange="selectContent(this)">
+          <label for="select_refresh">Refresh</label>
         </p>
         <p>
           <input name="content_selector" type="radio" value="link" id="select_link" onchange="selectContent(this)">
@@ -236,8 +284,13 @@
       </div>
       <div id="content_token" class="content_selecting hidden">
         <h1>Get token</h1>
-        <label for="sendToken">Get access token:</label>
-        <input type="button" id="send_token" value="send token">
+        <label for="send_token">Get access token:</label>
+        <input type="button" id="token_btn" value="send token">
+      </div>
+      <div id="content_refresh" class="content_selecting hidden">
+        <h1>Refresh token</h1>
+        <label for="refresh_token">Get refresh token:</label>
+        <input type="button" id="refresh_btn" value="refresh token">
       </div>
       <div id="content_link" class="content_selecting hidden">
         <h1>Content links</h1>

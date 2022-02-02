@@ -72,48 +72,59 @@
       }
     }
     // const loginForm = document.getElementById("myForm");
-    const loginXHR = new XMLHttpRequest();
-    const tokenXHR = new XMLHttpRequest();
-    const refreshXHR = new XMLHttpRequest();
+    const xhr = {
+      login: new XMLHttpRequest(),
+      token: new XMLHttpRequest(),
+      refresh:new XMLHttpRequest()
+    };
+    // const loginXHR = new XMLHttpRequest();
+    // const tokenXHR = new XMLHttpRequest();
+    // const refreshXHR = new XMLHttpRequest();
     var loginForm;
     var tokens;
-    // var sendToken;
+    var sendToken;
     var tokenButton;
     var refresButton;
     var refreshToken;
     var accessToken;
     var tokenStatus;
+    var oper;
+    // var opersRefreshButton;
+    // var operClearButton;
+    // var operCreateButton;
+    // var operUpdateButton;
+    // var operDeleteButton;
 
     function handleEvent(e) {
       log.textContent = log.textContent + " (" + e.type + ") (" + e.loaded + ") bytes transferred"
     }
-    loginXHR.addEventListener('loadstart', handleEvent);
-    loginXHR.addEventListener('loadend', handleEvent);
-    loginXHR.addEventListener('progress', handleEvent);
-    loginXHR.addEventListener("error", (event) => {
+    xhr.login.addEventListener('loadstart', handleEvent);
+    xhr.login.addEventListener('loadend', handleEvent);
+    xhr.login.addEventListener('progress', handleEvent);
+    xhr.login.addEventListener("error", (event) => {
       handleEvent(event);
       alert('Oops! Login went wrong.')
     });
-    loginXHR.addEventListener('error', handleEvent);
+    xhr.login.addEventListener('error', handleEvent);
     // loginXHR.addEventListener('abort', handleEvent);
-    loginXHR.addEventListener("load", (event) => {
+    xhr.login.addEventListener("load", (event) => {
       handleEvent(event);
-      tokenStatus.textContent = loginXHR.status + " " + loginXHR.statusText;
+      tokenStatus.textContent = xhr.login.status + " " + xhr.login.statusText;
       tokens = JSON.parse(event.target.responseText);
       accessToken.textContent = tokens.accessToken;
       refreshToken.textContent = tokens.refreshToken;
     });
-    tokenXHR.addEventListener("load", (event) => {
+    xhr.token.addEventListener("load", (event) => {
       handleEvent(event);
-      tokenStatus.textContent = tokenXHR.status + " " + tokenXHR.statusText;
+      tokenStatus.textContent = xhr.token.status + " " + xhr.token.statusText;
       let current = JSON.parse(event.target.responseText);
       tokens.accessToken = current.accessToken;
       accessToken.textContent = current.accessToken;
       // document.getElementById('refresh_token').textContent = tokens.refreshToken;
     });
-    refreshXHR.addEventListener("load", (event) => {
+    xhr.refresh.addEventListener("load", (event) => {
       handleEvent(event);
-      tokenStatus.textContent = refreshXHR.status + " " + refreshXHR.statusText;
+      tokenStatus.textContent = xhr.refresh.status + " " + xhr.refresh.statusText;
       tokens = JSON.parse(event.target.responseText);
       accessToken.textContent = tokens.accessToken;
       refreshToken.textContent = tokens.refreshToken;
@@ -125,32 +136,35 @@
       if (formData.get("login") == "" || formData.get("password") == "") {
         return;
       }
-      loginXHR.open("POST", "/api/0.0.1/login");
+      xhr.login.open("POST", "/api/0.0.1/login");
       // let formData = new FormData(loginForm);
-      loginXHR.send(formData);
+      xhr.login.send(formData);
     };
 
     function getAccess() {
       if (tokens.refreshToken == "") {
         return;
       }
-      tokenXHR.open("POST", "/api/0.0.1/token");
-      let token = {refreshToken: tokens.refreshToken};
-      tokenXHR.setRequestHeader('Content-type', 'application/json; charset=utf-8');
-      tokenXHR.send(JSON.stringify(token));
+      xhr.token.open("POST", "/api/0.0.1/token");
+      let token = {
+        refreshToken: tokens.refreshToken
+      };
+      xhr.token.setRequestHeader('Content-type', 'application/json; charset=utf-8');
+      xhr.token.send(JSON.stringify(token));
     };
 
     function getRefresh() {
       if (tokens.refreshToken == "") {
         return;
       }
-      refreshXHR.open("POST", "/api/0.0.1/refresh");
-      let token = {refreshToken: tokens.refreshToken,
+      xhr.refresh.open("POST", "/api/0.0.1/refresh");
+      let token = {
+        refreshToken: tokens.refreshToken,
         accessToken
       };
-      refreshXHR.setRequestHeader('Authorization', 'Bearer ' + tokens.accessToken);
-      refreshXHR.setRequestHeader('Content-type', 'application/json; charset=utf-8');
-      refreshXHR.send(JSON.stringify(token));
+      xhr.refresh.setRequestHeader('Authorization', 'Bearer ' + tokens.accessToken);
+      xhr.refresh.setRequestHeader('Content-type', 'application/json; charset=utf-8');
+      xhr.refresh.send(JSON.stringify(token));
     };
     document.addEventListener("DOMContentLoaded", () => {
       loginForm = document.forms.login_form;
@@ -159,6 +173,15 @@
       tokenStatus = document.getElementById('token_status');
       tokenButton = document.getElementById('token_btn');
       refreshButton = document.getElementById('refresh_btn');
+      oper = {
+        button: {
+          refresh:document.getElementById('opers_refresh_btn'),
+          clear:document.getElementById('oper_clear_btn'),
+          create:document.getElementById('oper_create_btn'),
+          update:document.getElementById('oper_update_btn'),
+          delete:document.getElementById('oper_delete_btn')
+        }
+      }
       log = document.querySelector('.event-log');
       loginForm.addEventListener("submit", (event) => {
         event.preventDefault();
@@ -254,18 +277,18 @@
             <tbody>
               <tr>
                 <td>
-                  <label for="login">Operator login:</label>
+                  <label for="auth_login">Operator login:</label>
                 </td>
                 <td>
-                  <input type="text" id="login" name="login">
+                  <input type="text" id="auth_login" name="login">
                 </td>
               </tr>
               <tr>
                 <td>
-                  <label for="password">Operator password:</label>
+                  <label for="auth_password">Operator password:</label>
                 </td>
                 <td>
-                  <input type="text" id="password" name="password">
+                  <input type="password" id="auth_password" name="password">
                 </td>
               </tr>
               <tr>
@@ -356,6 +379,60 @@
       </div>
       <div id="content_oper" class="content_selecting hidden">
         <h1>Content operator</h1>
+        <div>
+          <form name="oper_form">
+            <div>
+              <input type="button" id="opers_refresh_btn" value="refresh">
+              <input type="button" id="oper_clear_btn" value="clear">
+              <input type="button" id="oper_create_btn" value="create">
+              <input type="button" id="oper_update_btn" value="update">
+              <input type="button" id="oper_delete_btn" value="delete">
+            </div>
+            <table>
+              <colgroup>
+                <col>
+              </colgroup>
+              <thead>
+                <tr>
+                  <td>
+                    <label for="oper_id">Id</label>
+                  </td>
+                  <td>
+                    <label for="oper_name">Name</label>
+                  </td>
+                  <td>
+                    <label for="oper_login">Login</label>
+                  </td>
+                  <td>
+                    <label for="oper_password">Password</label>
+                  </td>
+                  <td>
+                    <label for="oper_email">Email</label>
+                  </td>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>
+                    <input type="text" id="oper_id" name="id" readonly>
+                  </td>
+                  <td>
+                    <input type="text" id="oper_name" name="name">
+                  </td>
+                  <td>
+                    <input type="text" id="oper_login" name="login">
+                  </td>
+                  <td>
+                    <input type="password" id="oper_password" name="password">
+                  </td>
+                  <td>
+                    <input type="text" id="oper_email" name="email">
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </form>
+        </div>
       </div>
     </article>
     <article>

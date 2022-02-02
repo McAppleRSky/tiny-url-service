@@ -71,29 +71,14 @@
           break;
       }
     }
-    // const loginForm = document.getElementById("myForm");
     const xhr = {
       login: new XMLHttpRequest(),
       token: new XMLHttpRequest(),
       refresh:new XMLHttpRequest()
     };
-    // const loginXHR = new XMLHttpRequest();
-    // const tokenXHR = new XMLHttpRequest();
-    // const refreshXHR = new XMLHttpRequest();
-    var loginForm;
-    var tokens;
+    var token, tokens;
     var sendToken;
-    var tokenButton;
-    var refresButton;
-    var refreshToken;
-    var accessToken;
-    var tokenStatus;
     var oper;
-    // var opersRefreshButton;
-    // var operClearButton;
-    // var operCreateButton;
-    // var operUpdateButton;
-    // var operDeleteButton;
 
     function handleEvent(e) {
       log.textContent = log.textContent + " (" + e.type + ") (" + e.loaded + ") bytes transferred"
@@ -109,35 +94,34 @@
     // loginXHR.addEventListener('abort', handleEvent);
     xhr.login.addEventListener("load", (event) => {
       handleEvent(event);
-      tokenStatus.textContent = xhr.login.status + " " + xhr.login.statusText;
+      token.label.status.textContent = xhr.login.status + " " + xhr.login.statusText;
       tokens = JSON.parse(event.target.responseText);
-      accessToken.textContent = tokens.accessToken;
-      refreshToken.textContent = tokens.refreshToken;
+      token.label.access.textContent = tokens.accessToken;
+      token.label.refresh.textContent = tokens.refreshToken;
     });
     xhr.token.addEventListener("load", (event) => {
       handleEvent(event);
-      tokenStatus.textContent = xhr.token.status + " " + xhr.token.statusText;
+      token.label.status.textContent = xhr.token.status + " " + xhr.token.statusText;
       let current = JSON.parse(event.target.responseText);
       tokens.accessToken = current.accessToken;
-      accessToken.textContent = current.accessToken;
+      token.label.access.textContent = current.accessToken;
       // document.getElementById('refresh_token').textContent = tokens.refreshToken;
     });
     xhr.refresh.addEventListener("load", (event) => {
       handleEvent(event);
-      tokenStatus.textContent = xhr.refresh.status + " " + xhr.refresh.statusText;
+      token.label.status.textContent = xhr.refresh.status + " " + xhr.refresh.statusText;
       tokens = JSON.parse(event.target.responseText);
-      accessToken.textContent = tokens.accessToken;
-      refreshToken.textContent = tokens.refreshToken;
+      token.label.access.textContent = tokens.accessToken;
+      token.label.refresh.textContent = tokens.refreshToken;
     });
 
     function sendLogin() {
-      let formData = new FormData(loginForm);
-      loginForm.reset();
+      let formData = new FormData(token.form.login);
+      token.form.login.reset();
       if (formData.get("login") == "" || formData.get("password") == "") {
         return;
       }
       xhr.login.open("POST", "/api/0.0.1/login");
-      // let formData = new FormData(loginForm);
       xhr.login.send(formData);
     };
 
@@ -146,11 +130,11 @@
         return;
       }
       xhr.token.open("POST", "/api/0.0.1/token");
-      let token = {
+      let tokenRequest = {
         refreshToken: tokens.refreshToken
       };
       xhr.token.setRequestHeader('Content-type', 'application/json; charset=utf-8');
-      xhr.token.send(JSON.stringify(token));
+      xhr.token.send(JSON.stringify(tokenRequest));
     };
 
     function getRefresh() {
@@ -158,41 +142,39 @@
         return;
       }
       xhr.refresh.open("POST", "/api/0.0.1/refresh");
-      let token = {
-        refreshToken: tokens.refreshToken,
-        accessToken
+      let tokenRequest = {
+        refreshToken: tokens.refreshToken
       };
       xhr.refresh.setRequestHeader('Authorization', 'Bearer ' + tokens.accessToken);
       xhr.refresh.setRequestHeader('Content-type', 'application/json; charset=utf-8');
-      xhr.refresh.send(JSON.stringify(token));
+      xhr.refresh.send(JSON.stringify(tokenRequest));
     };
     document.addEventListener("DOMContentLoaded", () => {
-      loginForm = document.forms.login_form;
-      accessToken = document.getElementById('access_token');
-      refreshToken = document.getElementById('refresh_token');
-      tokenStatus = document.getElementById('token_status');
-      tokenButton = document.getElementById('token_btn');
-      refreshButton = document.getElementById('refresh_btn');
+      token = {
+        label: {
+          access: document.getElementById('access_token'),
+          refresh: document.getElementById('refresh_token'),
+          status: document.getElementById('token_status') },
+        buton: {
+          access: document.getElementById('token_btn'),
+          refresh: document.getElementById('refresh_btn') },
+        form: {
+          login: document.forms.login_form } };
       oper = {
         button: {
           refresh:document.getElementById('opers_refresh_btn'),
           clear:document.getElementById('oper_clear_btn'),
           create:document.getElementById('oper_create_btn'),
           update:document.getElementById('oper_update_btn'),
-          delete:document.getElementById('oper_delete_btn')
-        }
-      }
+          delete:document.getElementById('oper_delete_btn') } };
       log = document.querySelector('.event-log');
-      loginForm.addEventListener("submit", (event) => {
+      token.form.login.addEventListener("submit", (event) => {
         event.preventDefault();
-        sendLogin();
-      });
+        sendLogin() });
       token_btn.addEventListener('click', () => {
-        getAccess();
-      });
+        getAccess() });
       refresh_btn.addEventListener('click', () => {
-        getRefresh();
-      });
+        getRefresh() });
     })
   </script>
   <style type="text/css" media="screen">

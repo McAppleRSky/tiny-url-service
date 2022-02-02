@@ -31,7 +31,7 @@ public class WithClientTest {
 
     @BeforeEach
     void prepare() {
-        server = new Thread(() -> Service.main(new String[]{}));
+        server = new Thread(() -> Application.main(new String[]{}));
         server.start();
         try {
             Thread.sleep(WAIT_SPRING_UP);

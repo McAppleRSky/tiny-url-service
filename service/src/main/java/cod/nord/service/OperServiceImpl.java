@@ -31,7 +31,8 @@ public class OperServiceImpl implements OperService {
     @Override @Nonnull
     public List<OperResponse> findAll() {
 //        throw new NotImplementedException("List<UserResponse> findAll()");
-        return operRepository.findAll().stream()
+        return operRepository.findAll()
+                .stream()
                 .map(OperHelper::buildResponse)
                 .collect(toList());
     }

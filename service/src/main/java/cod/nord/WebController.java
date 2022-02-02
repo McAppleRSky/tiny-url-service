@@ -1,5 +1,6 @@
 package cod.nord;
 
+import cod.nord.service.OperService;
 import cod.nord.service.auth.AuthService;
 import cod.nord.service.auth.model.JwtRequest;
 import cod.nord.service.auth.model.JwtResponse;
@@ -19,25 +20,29 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
 @RequiredArgsConstructor
 @Controller
-public class MainController implements OperServletable, AuthServletable, UrlServletable {
+public class WebController implements OperServletable, AuthServletable, UrlServletable {
 
     @Value("${base.host.name}")
     private String defaultHostName;
 
     private final AuthService authService;
+    private final OperService operService;
     private final Map<String, String> urlService;
 
 
-    @GetMapping(value = "/api/0.0.1/oper", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/api/0.0.1/opers", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
     @Override
-    public List<OperResponse> opers() {
-        throw new NotImplementedException("users /api/0.0.1/user");
-//        return userService.findAll();
+    public Collection<OperResponse> opers() {
+//        throw new NotImplementedException("users /api/0.0.1/user");
+        return  operService.findAll();
+//        ResponseEntity.ok(users)
     }
 
     @GetMapping(value = "/api/0.0.1/oper/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -141,7 +146,7 @@ public class MainController implements OperServletable, AuthServletable, UrlServ
 }
 
 interface OperServletable {
-    List<OperResponse>
+    Collection<OperResponse>
         opers();
     OperResponse
         oper(Integer id);

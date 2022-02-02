@@ -74,7 +74,8 @@
     const xhr = {
       login: new XMLHttpRequest(),
       token: new XMLHttpRequest(),
-      refresh:new XMLHttpRequest()
+      refresh:new XMLHttpRequest(),
+      oper: new XMLHttpRequest()
     };
     var token, tokens;
     var sendToken;
@@ -91,28 +92,29 @@
       alert('Oops! Login went wrong.')
     });
     xhr.login.addEventListener('error', handleEvent);
-    // loginXHR.addEventListener('abort', handleEvent);
     xhr.login.addEventListener("load", (event) => {
       handleEvent(event);
       token.label.status.textContent = xhr.login.status + " " + xhr.login.statusText;
       tokens = JSON.parse(event.target.responseText);
       token.label.access.textContent = tokens.accessToken;
-      token.label.refresh.textContent = tokens.refreshToken;
-    });
+      token.label.refresh.textContent = tokens.refreshToken });
     xhr.token.addEventListener("load", (event) => {
       handleEvent(event);
       token.label.status.textContent = xhr.token.status + " " + xhr.token.statusText;
       let current = JSON.parse(event.target.responseText);
       tokens.accessToken = current.accessToken;
-      token.label.access.textContent = current.accessToken;
-      // document.getElementById('refresh_token').textContent = tokens.refreshToken;
-    });
+      token.label.access.textContent = current.accessToken });
     xhr.refresh.addEventListener("load", (event) => {
       handleEvent(event);
       token.label.status.textContent = xhr.refresh.status + " " + xhr.refresh.statusText;
       tokens = JSON.parse(event.target.responseText);
       token.label.access.textContent = tokens.accessToken;
-      token.label.refresh.textContent = tokens.refreshToken;
+      token.label.refresh.textContent = tokens.refreshToken });
+    xhr.oper.addEventListener("load", (event) => {
+      handleEvent(event);
+      token.label.status.textContent = xhr.refresh.oper + " " + xhr.oper.statusText;
+      alert(event.target.responseText);
+      let opersResponse = JSON.parse(event.target.responseText)
     });
 
     function sendLogin() {
@@ -149,15 +151,25 @@
       xhr.refresh.setRequestHeader('Content-type', 'application/json; charset=utf-8');
       xhr.refresh.send(JSON.stringify(tokenRequest));
     };
+
+    function opers() {
+      if (tokens.refreshToken == "") {
+        return;
+      }
+      xhr.oper.open("GET", "/api/0.0.1/opers");
+      let tokenRequest = {
+        refreshToken: tokens.refreshToken
+      };
+      xhr.oper.setRequestHeader('Authorization', 'Bearer ' + tokens.accessToken);
+      xhr.oper.setRequestHeader('Content-type', 'application/json; charset=utf-8');
+      xhr.oper.send(JSON.stringify(tokenRequest));
+    }
     document.addEventListener("DOMContentLoaded", () => {
       token = {
         label: {
           access: document.getElementById('access_token'),
           refresh: document.getElementById('refresh_token'),
           status: document.getElementById('token_status') },
-        buton: {
-          access: document.getElementById('token_btn'),
-          refresh: document.getElementById('refresh_btn') },
         form: {
           login: document.forms.login_form } };
       oper = {
@@ -171,10 +183,14 @@
       token.form.login.addEventListener("submit", (event) => {
         event.preventDefault();
         sendLogin() });
-      token_btn.addEventListener('click', () => {
-        getAccess() });
-      refresh_btn.addEventListener('click', () => {
-        getRefresh() });
+      document
+        .getElementById('token_btn')
+        .addEventListener('click', () => {getAccess()});
+      document
+        .getElementById('refresh_btn')
+        .addEventListener('click', () => {getRefresh()});
+      oper.button.refresh
+        .addEventListener('click', () => {opers()});
     })
   </script>
   <style type="text/css" media="screen">

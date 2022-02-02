@@ -5,9 +5,7 @@ import cod.nord.repository.entity.Oper;
 public class OperHelper {
 
     public static OperResponse buildResponse(Oper oper) {
-        return new OperResponse()
-                .setId(oper.getId())
-                .setName(oper.getName());
+        return new OperResponse(oper.getId(), oper.getName(), oper.getLogin(), oper.getEmail());
     }
 
 }

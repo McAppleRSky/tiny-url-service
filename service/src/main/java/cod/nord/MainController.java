@@ -91,12 +91,12 @@ public class MainController implements OperServletable, AuthServletable, UrlServ
         return ResponseEntity.ok(token);
     }
 
-    @PostMapping("/api/0.0.1/token")
+    @PostMapping(path="/api/0.0.1/token", consumes = "application/json")
     @Override
-    public ResponseEntity<JwtResponse> getNewAccessToken(RefreshJwtRequest request) {
-        throw new NotImplementedException("token /api/0.0.1/token");
-//        final JwtResponse token = authService.getAccessToken(request.getRefreshToken());
-//        return ResponseEntity.ok(token);
+    public ResponseEntity<JwtResponse> getNewAccessToken(@RequestBody RefreshJwtRequest request) {
+//        throw new NotImplementedException("token /api/0.0.1/token");
+        final JwtResponse token = authService.getAccessToken(request.getRefreshToken());
+        return ResponseEntity.ok(token);
     }
 
     @PostMapping("/api/0.0.1/refresh")

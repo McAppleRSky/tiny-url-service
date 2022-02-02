@@ -19,9 +19,9 @@
           selectedAny.classList.remove("hidden");
           selectedAny.classList.remove("visible");
           break;
-        case 'refresh':
+        case 'token':
           selectedAll = document.querySelectorAll(".content_selecting");
-          selectedAny = document.querySelector('#content_refresh');
+          selectedAny = document.querySelector('#content_token');
           selectedAll.forEach((element) => {
             element.classList.remove("visible");
             element.classList.add("hidden")
@@ -39,9 +39,9 @@
           selectedAny.classList.remove("hidden");
           selectedAny.classList.remove("visible");
           break;
-        case 'user':
+        case 'oper':
           selectedAll = document.querySelectorAll(".content_selecting");
-          selectedAny = document.querySelector('#content_user');
+          selectedAny = document.querySelector('#content_oper');
           selectedAll.forEach((element) => {
             element.classList.remove("visible");
             element.classList.add("hidden")
@@ -63,11 +63,10 @@
     }
     // const loginForm = document.getElementById("myForm");
     const loginXHR = new XMLHttpRequest();
-    const accessXHR= new XMLHttpRequest();
+    const tokenXHR= new XMLHttpRequest();
     var loginForm;
     var tokens;
-    var sendRefresh;
-    var temp;
+    var sendToken;
 
     function handleEvent(e) {
       log.textContent = log.textContent + " (" + e.type + ") (" + e.loaded + ") bytes transferred"
@@ -88,12 +87,12 @@
         document.getElementById('access_token').textContent = tokens.accessToken;
         document.getElementById('refresh_token').textContent = tokens.refreshToken;
     });
-    accessXHR.addEventListener("load", (event) => {
+    tokenXHR.addEventListener("load", (event) => {
         handleEvent(event);
-        document.getElementById('refresh_status').textContent = accessXHR.status + " " + accessXHR.statusText;
-        temp = event.target.responseText;
-        // tokens = JSON.parse(event.target.responseText);
-        // document.getElementById('access_token').textContent = tokens.accessToken;
+        document.getElementById('token_status').textContent = tokenXHR.status + " " + tokenXHR.statusText;
+        let token = JSON.parse(event.target.responseText);
+        tokens.accessToken = token.accessToken;
+        document.getElementById('access_token').textContent = token.accessToken;
         // document.getElementById('refresh_token').textContent = tokens.refreshToken;
     });
 
@@ -111,20 +110,20 @@
       if (tokens.refreshToken=="") {
         return;
       }
-      accessXHR.open("POST", "/api/0.0.1/token");
-      let json = JSON.stringify({refreshToken: tokens.refreshToken});
-      accessXHR.setRequestHeader('Content-type', 'application/json; charset=utf-8');
-      accessXHR.send(json);
-    }
+      tokenXHR.open("POST", "/api/0.0.1/token");
+      let token = {refreshToken:tokens.refreshToken};
+      tokenXHR.setRequestHeader('Content-type', 'application/json; charset=utf-8');
+      tokenXHR.send(JSON.stringify(token));
+    };
     document.addEventListener("DOMContentLoaded", () => {
       loginForm = document.forms.login_form;
-      sendRefresh = document.getElementById('send_refresh');
+      sendToken = document.getElementById('send_token');
       log = document.querySelector('.event-log');
       loginForm.addEventListener("submit", (event) => {
         event.preventDefault();
         sendLogin();
       });
-      sendRefresh.addEventListener('click', () =>{
+      sendToken.addEventListener('click', () =>{
         getAccess();
       });
     })
@@ -176,16 +175,16 @@
           <label for="select_login">Login</label>
         </p>
         <p>
-          <input name="content_selector" type="radio" value="refresh" id="select_refresh" onchange="selectContent(this)">
-          <label for="select_refresh">Refresh</label>
+          <input name="content_selector" type="radio" value="token" id="select_token" onchange="selectContent(this)">
+          <label for="select_token">Token</label>
         </p>
         <p>
           <input name="content_selector" type="radio" value="link" id="select_link" onchange="selectContent(this)">
           <label for="select_link">Link</label>
         </p>
         <p>
-          <input name="content_selector" type="radio" value="user" id="select_radio" onchange="selectContent(this)">
-          <label for="select_radio">User</label>
+          <input name="content_selector" type="radio" value="oper" id="select_radio" onchange="selectContent(this)">
+          <label for="select_radio">Operator</label>
         </p>
       </form>
     </section>
@@ -207,7 +206,7 @@
             <tbody>
               <tr>
                 <td>
-                  <label for="login">user name:</label>
+                  <label for="login">Operator login:</label>
                 </td>
                 <td>
                   <input type="text" id="login" name="login">
@@ -215,7 +214,7 @@
               </tr>
               <tr>
                 <td>
-                  <label for="password">user pass:</label>
+                  <label for="password">Operator password:</label>
                 </td>
                 <td>
                   <input type="text" id="password" name="password">
@@ -235,10 +234,10 @@
           <label id="login_status">-</label>
         </p>
       </div>
-      <div id="content_refresh" class="content_selecting hidden">
-        <h1>Refresh token</h1>
-        <label for="sendRefresh">Get access token:</label>
-        <input type="button" id="send_refresh" value="send refresh token">
+      <div id="content_token" class="content_selecting hidden">
+        <h1>Get token</h1>
+        <label for="sendToken">Get access token:</label>
+        <input type="button" id="send_token" value="send token">
       </div>
       <div id="content_link" class="content_selecting hidden">
         <h1>Content links</h1>
@@ -302,8 +301,8 @@
           </div>
         </div>
       </div>
-      <div id="content_user" class="content_selecting hidden">
-        <h1>Content users</h1>
+      <div id="content_oper" class="content_selecting hidden">
+        <h1>Content operator</h1>
       </div>
     </article>
     <article>
@@ -311,8 +310,8 @@
       <label id="access_token">-</label>
       <h2>Refresh token</h2>
       <label id="refresh_token">-</label>
-      <p>refresh status :
-        <label id="refresh_status">-</label>
+      <p>token status :
+        <label id="token_status">-</label>
       </p>
     </article>
   </main>

@@ -80,7 +80,7 @@
     var token, tokens;
     var sendToken;
     var oper;
-
+// var opersResponse;
     function handleEvent(e) {
       log.textContent = log.textContent + " (" + e.type + ") (" + e.loaded + ") bytes transferred"
     }
@@ -113,10 +113,24 @@
     xhr.oper.addEventListener("load", (event) => {
       handleEvent(event);
       token.label.status.textContent = xhr.refresh.oper + " " + xhr.oper.statusText;
-      alert(event.target.responseText);
       let opersResponse = JSON.parse(event.target.responseText)
-    });
-
+      for (let entity of opersResponse) {
+        let id = document.createElement('td');
+        id.textContent = entity.id;
+        let name = document.createElement('td');
+        name.textContent = entity.name;
+        let login = document.createElement('td');
+        login.textContent = entity.login;
+        let pass = document.createElement('td');
+        let email = document.createElement('td');
+        email.textContent = entity.email;
+        let row = document.createElement('tr');
+        row.appendChild(id);
+        row.appendChild(name);
+        row.appendChild(login);
+        row.appendChild(pass);
+        row.appendChild(email);
+        oper.table.tbody.appendChild(row) } });
     function sendLogin() {
       let formData = new FormData(token.form.login);
       token.form.login.reset();
@@ -178,7 +192,10 @@
           clear:document.getElementById('oper_clear_btn'),
           create:document.getElementById('oper_create_btn'),
           update:document.getElementById('oper_update_btn'),
-          delete:document.getElementById('oper_delete_btn') } };
+          delete:document.getElementById('oper_delete_btn') },
+        table:{
+          t: document.getElementById('opers_tbl'),
+          tbody: document.getElementById('opers_tbl_body') } };
       log = document.querySelector('.event-log');
       token.form.login.addEventListener("submit", (event) => {
         event.preventDefault();
@@ -386,7 +403,7 @@
               <input type="button" id="oper_update_btn" value="update">
               <input type="button" id="oper_delete_btn" value="delete">
             </div>
-            <table>
+            <table id="opers_tbl">
               <colgroup>
                 <col>
               </colgroup>
@@ -409,7 +426,7 @@
                   </td>
                 </tr>
               </thead>
-              <tbody>
+              <tbody id="opers_tbl_body">
                 <tr>
                   <td>
                     <input type="text" id="oper_id" name="id" readonly>

@@ -75,12 +75,23 @@
       login: new XMLHttpRequest(),
       token: new XMLHttpRequest(),
       refresh:new XMLHttpRequest(),
-      oper: new XMLHttpRequest()
+      opers: new XMLHttpRequest(),
+      oper: new XMLHttpRequest(),
     };
     var token, tokens;
     var sendToken;
     var oper;
-// var opersResponse;
+
+    var clickRowHandler = function(row) {
+      return function() {
+        let cells = row.getElementsByTagName("td");
+        oper.form.id.value = cells[0].innerText;
+        oper.form.name.value = cells[1].innerText;
+        oper.form.login.value = cells[2].innerText;
+        // oper.form.password.value = cells[3];
+        oper.form.email.value = cells[4].innerText;
+      };
+    };
     function handleEvent(e) {
       log.textContent = log.textContent + " (" + e.type + ") (" + e.loaded + ") bytes transferred"
     }
@@ -110,27 +121,35 @@
       tokens = JSON.parse(event.target.responseText);
       token.label.access.textContent = tokens.accessToken;
       token.label.refresh.textContent = tokens.refreshToken });
-    xhr.oper.addEventListener("load", (event) => {
+    xhr.opers.addEventListener("load", (event) => {
       handleEvent(event);
-      token.label.status.textContent = xhr.refresh.oper + " " + xhr.oper.statusText;
+      token.label.status.textContent = xhr.refresh.oper + " " + xhr.opers.statusText;
       let opersResponse = JSON.parse(event.target.responseText)
-      for (let entity of opersResponse) {
-        let id = document.createElement('td');
-        id.textContent = entity.id;
-        let name = document.createElement('td');
-        name.textContent = entity.name;
-        let login = document.createElement('td');
-        login.textContent = entity.login;
-        let pass = document.createElement('td');
-        let email = document.createElement('td');
-        email.textContent = entity.email;
-        let row = document.createElement('tr');
-        row.appendChild(id);
-        row.appendChild(name);
-        row.appendChild(login);
-        row.appendChild(pass);
-        row.appendChild(email);
-        oper.table.tbody.appendChild(row) } });
+        for (let entity of opersResponse) {
+          let id = document.createElement('td');
+          id.textContent = entity.id;
+          let name = document.createElement('td');
+          name.textContent = entity.name;
+          let login = document.createElement('td');
+          login.textContent = entity.login;
+          let pass = document.createElement('td');
+          let email = document.createElement('td');
+          email.textContent = entity.email;
+          let row = document.createElement('tr');
+          row.appendChild(id);
+          row.appendChild(name);
+          row.appendChild(login);
+          row.appendChild(pass);
+          row.appendChild(email);
+          row.onclick = clickRowHandler(row);
+          oper.table.tbody.appendChild(row);
+        }
+      });
+      xhr.oper.addEventListener("load", (event) => {
+        handleEvent(event);
+        // token.label.status.textContent = xhr.refresh.oper + " " + xhr.opers.statusText;
+        // let opersResponse = JSON.parse(event.target.responseText)
+        getRefresh() });
     function sendLogin() {
       let formData = new FormData(token.form.login);
       token.form.login.reset();
@@ -170,14 +189,61 @@
       if (tokens.refreshToken == "") {
         return;
       }
-      xhr.oper.open("GET", "/api/0.0.1/opers");
+      xhr.opers.open("GET", "/api/0.0.1/opers");
       let tokenRequest = {
         refreshToken: tokens.refreshToken
       };
+      xhr.opers.setRequestHeader('Authorization', 'Bearer ' + tokens.accessToken);
+      xhr.opers.setRequestHeader('Content-type', 'application/json; charset=utf-8');
+      xhr.opers.send(JSON.stringify(tokenRequest)) };
+    function operCreate() {
+      if (oper.form.name.value.length == 0
+        || oper.form.login.value.length == 0
+        || oper.form.password.value.length == 0
+        || oper.form.email.value.length == 0
+      ) {
+        return;
+      }
+      let createRequest = {
+        name:oper.form.name.value,
+        login:oper.form.login.value,
+        password:oper.form.password.value,
+        email:oper.form.email.value
+      }
+      // alert(oper.form.password.value);
+      xhr.oper.open("POST", "/api/0.0.1/oper");
       xhr.oper.setRequestHeader('Authorization', 'Bearer ' + tokens.accessToken);
       xhr.oper.setRequestHeader('Content-type', 'application/json; charset=utf-8');
-      xhr.oper.send(JSON.stringify(tokenRequest));
-    }
+      xhr.oper.send(JSON.stringify(createRequest))
+    };
+    function operUpdate() {
+      if (oper.form.id.value.length == 0
+        || oper.form.name.value.length == 0
+        || oper.form.login.value.length == 0
+        || oper.form.password.value.length == 0
+        || oper.form.email.value.length == 0
+      ) {
+        return;
+      }
+      let updateRequest = {
+        name:oper.form.name.value,
+        login:oper.form.login.value,
+        password:oper.form.password.value,
+        email:oper.form.email.value
+      }
+      xhr.oper.open("PATCH", "/api/0.0.1/oper/" + oper.form.id);
+      xhr.oper.setRequestHeader('Authorization', 'Bearer ' + tokens.accessToken);
+      xhr.oper.setRequestHeader('Content-type', 'application/json; charset=utf-8');
+      xhr.oper.send(JSON.stringify(updateRequest)) };
+    function operDelete() {
+      if (oper.form.id.value.length == 0) {
+        return;
+      }
+      xhr.oper.open("DELETE", "/api/0.0.1/oper/" + oper.form.id);
+      xhr.oper.setRequestHeader('Authorization', 'Bearer ' + tokens.accessToken);
+      xhr.oper.setRequestHeader('Content-type', 'application/json; charset=utf-8');
+      xhr.oper.send(null)
+    };
     document.addEventListener("DOMContentLoaded", () => {
       token = {
         label: {
@@ -187,6 +253,13 @@
         form: {
           login: document.forms.login_form } };
       oper = {
+        form: {
+          f:document.forms.oper_form,
+          id:document.getElementById('oper_id'),
+          name:document.getElementById('oper_name'),
+          login:document.getElementById('oper_login'),
+          password:document.getElementById('oper_password'),
+          email:document.getElementById('oper_email') },
         button: {
           refresh:document.getElementById('opers_refresh_btn'),
           clear:document.getElementById('oper_clear_btn'),
@@ -208,6 +281,14 @@
         .addEventListener('click', () => {getRefresh()});
       oper.button.refresh
         .addEventListener('click', () => {opers()});
+      oper.button.clear
+        .addEventListener('click', () => {oper.form.f.reset()});
+      oper.button.create
+        .addEventListener('click', () => {operCreate()});
+      oper.button.update
+        .addEventListener('click', () => {operUpdate()});
+      oper.button.delete
+        .addEventListener('click', () => {operDelete()})
     })
   </script>
   <style type="text/css" media="screen">

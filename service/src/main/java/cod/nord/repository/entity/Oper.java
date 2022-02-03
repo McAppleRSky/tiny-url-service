@@ -19,7 +19,10 @@ public class Oper //implements UserDetails
 {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+//    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    // http://www.h2database.com/html/grammar.html
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+//    @Column(updatable = false, nullable = false, unique = true)
     private Integer id;
 
     @NotBlank(message = "name cannot be empty")

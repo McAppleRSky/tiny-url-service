@@ -16,10 +16,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+import java.net.URI;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -55,25 +57,29 @@ public class WebController implements OperServletable, AuthServletable, UrlServl
     @PostMapping(value = "/api/0.0.1/oper", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @Override
     public ResponseEntity<Void> create(@Valid @RequestBody OperRequest requested) {
-        throw new NotImplementedException("create /api/0.0.1/oper");
-//        final int id = userService.create(requested);
-//        final URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/api/0.0.1/user/{id}").buildAndExpand(id).toUri();
-//        return ResponseEntity.created(uri).build();
+//        throw new NotImplementedException("create /api/0.0.1/oper");
+        final int id = operService.create(requested);
+        final URI uri = ServletUriComponentsBuilder
+                .fromCurrentRequest()
+                .path("/api/0.0.1/user/{id}")
+                .buildAndExpand(id)
+                .toUri();
+        return ResponseEntity.created(uri).build();
     }
 
     @PatchMapping(value = "/api/0.0.1/oper/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @Override
     public OperResponse update(@PathVariable Integer id, @Valid @RequestBody OperRequest requested) {
-        throw new NotImplementedException("update /api/0.0.1/oper/{id}");
-//        return userService.update(id, requested);
+//        throw new NotImplementedException("update /api/0.0.1/oper/{id}");
+        return operService.update(id, requested);
     }
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("/api/0.0.1/oper/{id}")
     @Override
     public void delete(@PathVariable Integer id) {
-//        userService.delete(id);
-        throw new NotImplementedException("delete /api/0.0.1/oper/{id}");
+        operService.delete(id);
+//        throw new NotImplementedException("delete /api/0.0.1/oper/{id}");
     }
 
     @GetMapping("/api/0.0.1/operate")

@@ -44,10 +44,12 @@ public class OperServiceImpl implements OperService {
         throw new NotImplementedException("UserResponse getById(int id)");
     }
 
-    @Override
+    @Transactional
+    @Override @Nonnull
     public int create(@Nonnull OperRequest requested) {
         Oper creating = new Oper();
         creating.setName(requested.getName());
+        creating.setLogin(requested.getLogin());
         creating.setEmail(requested.getEmail());
         creating.setPassword(requested.getPassword());
         Oper created = operRepository.save(creating);
@@ -59,7 +61,7 @@ public class OperServiceImpl implements OperService {
     public OperResponse update(int id, @Nonnull OperRequest requested) {
         Oper updating = operRepository.findById(id);
         if (updating==null){
-            throw new EntityNotFoundException("User '" + id + "' not found");
+            throw new EntityNotFoundException("Operator '" + id + "' not found");
         } else {
             updating.setEmail(requested.getEmail());
             updating.setPassword(requested.getPassword());

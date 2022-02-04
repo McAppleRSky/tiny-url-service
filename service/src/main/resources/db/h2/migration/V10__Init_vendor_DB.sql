@@ -14,9 +14,11 @@ create table oper_role (
 );
 create table link (
   id integer not null primary key,
-  expire timestamp,
   path varchar(3) not null,
   url varchar(120) not null,
+  expire timestamp,
+  follow_count integer default 0,
+  follow_unique_count integer default 0,
   oper_id integer not null,
   constraint link_path_UK unique (path),
   constraint link_url_UK unique (url),

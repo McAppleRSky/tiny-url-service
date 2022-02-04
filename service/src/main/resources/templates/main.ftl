@@ -74,13 +74,16 @@
     const xhr = {
       login: new XMLHttpRequest(),
       token: new XMLHttpRequest(),
-      refresh:new XMLHttpRequest(),
+      refresh: new XMLHttpRequest(),
       opers: new XMLHttpRequest(),
       oper: new XMLHttpRequest(),
+      links: new XMLHttpRequest(),
+      link: new XMLHttpRequest(),
     };
     var token, tokens;
     var sendToken;
     var oper;
+    var link;
 
     var clickRowHandler = function(row) {
       return function() {
@@ -92,6 +95,7 @@
         oper.form.email.value = cells[4].innerText;
       };
     };
+
     function handleEvent(e) {
       log.textContent = log.textContent + " (" + e.type + ") (" + e.loaded + ") bytes transferred"
     }
@@ -108,19 +112,22 @@
       token.label.status.textContent = xhr.login.status + " " + xhr.login.statusText;
       tokens = JSON.parse(event.target.responseText);
       token.label.access.textContent = tokens.accessToken;
-      token.label.refresh.textContent = tokens.refreshToken });
+      token.label.refresh.textContent = tokens.refreshToken
+    });
     xhr.token.addEventListener("load", (event) => {
       handleEvent(event);
       token.label.status.textContent = xhr.token.status + " " + xhr.token.statusText;
       let current = JSON.parse(event.target.responseText);
       tokens.accessToken = current.accessToken;
-      token.label.access.textContent = current.accessToken });
+      token.label.access.textContent = current.accessToken
+    });
     xhr.refresh.addEventListener("load", (event) => {
       handleEvent(event);
       token.label.status.textContent = xhr.refresh.status + " " + xhr.refresh.statusText;
       tokens = JSON.parse(event.target.responseText);
       token.label.access.textContent = tokens.accessToken;
-      token.label.refresh.textContent = tokens.refreshToken });
+      token.label.refresh.textContent = tokens.refreshToken
+    });
     xhr.opers.addEventListener("load", (event) => {
       handleEvent(event);
       let rows = oper.table.tbody.getElementsByTagName("tr");
@@ -130,34 +137,36 @@
       }
       token.label.status.textContent = xhr.refresh.oper + " " + xhr.opers.statusText;
       let opersResponse = JSON.parse(event.target.responseText);
-        for (let entity of opersResponse) {
-          let id = document.createElement('td');
-          id.textContent = entity.id;
-          let name = document.createElement('td');
-          name.textContent = entity.name;
-          let login = document.createElement('td');
-          login.textContent = entity.login;
-          let pass = document.createElement('td');
-          let email = document.createElement('td');
-          email.textContent = entity.email;
-          let row = document.createElement('tr');
-          row.appendChild(id);
-          row.appendChild(name);
-          row.appendChild(login);
-          row.appendChild(pass);
-          row.appendChild(email);
-          row.onclick = clickRowHandler(row);
-          oper.table.tbody.appendChild(row);
-        }
-        oper.form.f.reset()
-      });
-      xhr.oper.addEventListener("load", (event) => {
-        handleEvent(event);
+      for (let entity of opersResponse) {
+        let id = document.createElement('td');
+        id.textContent = entity.id;
+        let name = document.createElement('td');
+        name.textContent = entity.name;
+        let login = document.createElement('td');
+        login.textContent = entity.login;
+        let pass = document.createElement('td');
+        let email = document.createElement('td');
+        email.textContent = entity.email;
+        let row = document.createElement('tr');
+        row.appendChild(id);
+        row.appendChild(name);
+        row.appendChild(login);
+        row.appendChild(pass);
+        row.appendChild(email);
+        row.onclick = clickRowHandler(row);
+        oper.table.tbody.appendChild(row);
+      }
+      oper.form.f.reset()
+    });
+    xhr.oper.addEventListener("load", (event) => {
+      handleEvent(event);
 
-        // token.label.status.textContent = xhr.refresh.oper + " " + xhr.opers.statusText;
-        // let currentResponse = JSON.parse(event.target.responseText)
-        alert(event.target.responseText);
-        opers() });
+      // token.label.status.textContent = xhr.refresh.oper + " " + xhr.opers.statusText;
+      // let currentResponse = JSON.parse(event.target.responseText)
+      alert(event.target.responseText);
+      opers()
+    });
+
     function sendLogin() {
       let formData = new FormData(token.form.login);
       token.form.login.reset();
@@ -203,17 +212,19 @@
       };
       xhr.opers.setRequestHeader('Authorization', 'Bearer ' + tokens.accessToken);
       xhr.opers.setRequestHeader('Content-type', 'application/json; charset=utf-8');
-      xhr.opers.send(JSON.stringify(tokenRequest)) };
+      xhr.opers.send(JSON.stringify(tokenRequest))
+    };
+
     function operCreate() {
-      if (oper.form.login.value.length == 0
-        || oper.form.password.value.length == 0) {
+      if (oper.form.login.value.length == 0 ||
+        oper.form.password.value.length == 0) {
         return;
       }
       let createRequest = {
-        name:oper.form.name.value,
-        login:oper.form.login.value,
-        password:oper.form.password.value,
-        email:oper.form.email.value
+        name: oper.form.name.value,
+        login: oper.form.login.value,
+        password: oper.form.password.value,
+        email: oper.form.email.value
       }
       // alert(oper.form.password.value);
       xhr.oper.open("POST", "/api/0.0.1/oper");
@@ -221,20 +232,23 @@
       xhr.oper.setRequestHeader('Content-type', 'application/json; charset=utf-8');
       xhr.oper.send(JSON.stringify(createRequest))
     };
+
     function operUpdate() {
-      if (oper.form.id.value.length == 0
-        || oper.form.password.value.length == 0) {
+      if (oper.form.id.value.length == 0 ||
+        oper.form.password.value.length == 0) {
         return;
       }
       let updateRequest = {
-        name:oper.form.name.value,
-        password:oper.form.password.value,
-        email:oper.form.email.value
+        name: oper.form.name.value,
+        password: oper.form.password.value,
+        email: oper.form.email.value
       }
       xhr.oper.open("PATCH", "/api/0.0.1/oper/" + oper.form.id.value);
       xhr.oper.setRequestHeader('Authorization', 'Bearer ' + tokens.accessToken);
       xhr.oper.setRequestHeader('Content-type', 'application/json; charset=utf-8');
-      xhr.oper.send(JSON.stringify(updateRequest)) };
+      xhr.oper.send(JSON.stringify(updateRequest))
+    };
+
     function operDelete() {
       if (oper.form.id.value.length == 0) {
         return;
@@ -249,47 +263,109 @@
         label: {
           access: document.getElementById('access_token'),
           refresh: document.getElementById('refresh_token'),
-          status: document.getElementById('token_status') },
+          status: document.getElementById('token_status')
+        },
         form: {
-          login: document.forms.login_form } };
+          login: document.forms.login_form
+        }
+      };
       oper = {
         form: {
-          f:document.forms.oper_form,
-          id:document.getElementById('oper_id'),
-          name:document.getElementById('oper_name'),
-          login:document.getElementById('oper_login'),
-          password:document.getElementById('oper_password'),
-          email:document.getElementById('oper_email') },
+          f: document.forms.oper_form,
+          id: document.getElementById('oper_id'),
+          name: document.getElementById('oper_name'),
+          login: document.getElementById('oper_login'),
+          password: document.getElementById('oper_password'),
+          email: document.getElementById('oper_email')
+        },
         button: {
-          refresh:document.getElementById('opers_refresh_btn'),
-          clear:document.getElementById('oper_clear_btn'),
-          create:document.getElementById('oper_create_btn'),
-          update:document.getElementById('oper_update_btn'),
-          delete:document.getElementById('oper_delete_btn') },
-        table:{
+          refresh: document.getElementById('opers_refresh_btn'),
+          clear: document.getElementById('oper_clear_btn'),
+          create: document.getElementById('oper_create_btn'),
+          update: document.getElementById('oper_update_btn'),
+          delete: document.getElementById('oper_delete_btn')
+        },
+        table: {
           t: document.getElementById('opers_tbl'),
           tbody: document.getElementById('opers_tbl_body'),
-          firstRow: document.getElementById('first_row') } };
+          firstRow: document.getElementById('first_row')
+        }
+      }
+      link = {
+        form: {
+          f: document.forms.link_form,
+          id: document.getElementById('link_id'),
+          path: document.getElementById('link_path'),
+          url: document.getElementById('link_url')
+        },
+        button: {
+          refresh: document.getElementById('opers_refresh_btn'),
+          clear: document.getElementById('oper_clear_btn'),
+          create: document.getElementById('oper_create_btn'),
+          update: document.getElementById('oper_update_btn'),
+          delete: document.getElementById('oper_delete_btn')
+        },
+        table: {
+          t: document.getElementById('links_tbl'),
+          tbody: document.getElementById('links_tbl_body')
+        }
+      };
+
       log = document.querySelector('.event-log');
       token.form.login.addEventListener("submit", (event) => {
         event.preventDefault();
-        sendLogin() });
+        sendLogin()
+      });
       document
         .getElementById('token_btn')
-        .addEventListener('click', () => {getAccess()});
+        .addEventListener('click', () => {
+          getAccess()
+        });
       document
         .getElementById('refresh_btn')
-        .addEventListener('click', () => {getRefresh()});
+        .addEventListener('click', () => {
+          getRefresh()
+        });
       oper.button.refresh
-        .addEventListener('click', () => {opers()});
+        .addEventListener('click', () => {
+          opers()
+        });
       oper.button.clear
-        .addEventListener('click', () => {oper.form.f.reset()});
+        .addEventListener('click', () => {
+          oper.form.f.reset()
+        });
       oper.button.create
-        .addEventListener('click', () => {operCreate()});
+        .addEventListener('click', () => {
+          operCreate()
+        });
       oper.button.update
-        .addEventListener('click', () => {operUpdate()});
+        .addEventListener('click', () => {
+          operUpdate()
+        });
       oper.button.delete
-        .addEventListener('click', () => {operDelete()})
+        .addEventListener('click', () => {
+          operDelete()
+        });
+        link.button.refresh
+          .addEventListener('click', () => {
+            links()
+          });
+        link.button.clear
+          .addEventListener('click', () => {
+            link.form.f.reset()
+          });
+        link.button.create
+          .addEventListener('click', () => {
+            linkCreate()
+          });
+        link.button.update
+          .addEventListener('click', () => {
+            linkUpdate()
+          });
+        link.button.delete
+          .addEventListener('click', () => {
+            linkDelete()
+          })
     })
   </script>
   <style type="text/css" media="screen">
@@ -431,13 +507,19 @@
               <thead>
                 <tr>
                   <td>
-                    <label for="oper_id">Id</label>
+                    <label for="link_id">Id</label>
                   </td>
                   <td>
-                    <label for="path">Name</label>
+                    <label for="link_path">Path</label>
                   </td>
                   <td>
-                    <label for="url">Login</label>
+                    <label for="link_url">URL</label>
+                  </td>
+                  <td>
+                    <label for="link_follow">Path</label>
+                  </td>
+                  <td>
+                    <label for="link_follow_unique">URL</label>
                   </td>
                 </tr>
               </thead>
@@ -450,7 +532,13 @@
                     <input type="text" id="link_path" name="path">
                   </td>
                   <td>
-                    <input type="text" id="link_url" name="url">
+                    <input type="text" id="link_url" name="url" readonly>
+                  </td>
+                  <td>
+                    <input type="text" id="link_follow" name="follow" readonly>
+                  </td>
+                  <td>
+                    <input type="text" id="link_follow_unique" name="follow_unique" readonly>
                   </td>
                 </tr>
               </tbody>

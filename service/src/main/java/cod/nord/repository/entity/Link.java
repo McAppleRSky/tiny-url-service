@@ -28,6 +28,12 @@ public class Link {
 
     private Timestamp expire;
 
+    @Column(name="follow_count", columnDefinition="integer default 0")
+    private Integer followCount;
+
+    @Column(name="follow_unique_count", columnDefinition="integer default 0")
+    private Integer followUniqueCount;
+
     @ManyToOne
     @JoinColumn(name="oper_id", nullable=false)
     private Oper oper;

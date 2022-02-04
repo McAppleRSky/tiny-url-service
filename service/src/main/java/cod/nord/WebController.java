@@ -1,5 +1,6 @@
 package cod.nord;
 
+import cod.nord.repository.entity.Oper;
 import cod.nord.service.OperService;
 import cod.nord.service.auth.AuthService;
 import cod.nord.service.auth.model.JwtRequest;
@@ -10,6 +11,7 @@ import cod.nord.service.model.OperResponse;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.NotImplementedException;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -23,7 +25,6 @@ import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.net.URI;
 import java.util.Collection;
-import java.util.List;
 import java.util.Map;
 
 @RequiredArgsConstructor
@@ -69,9 +70,15 @@ public class WebController implements OperServletable, AuthServletable, UrlServl
 
     @PatchMapping(value = "/api/0.0.1/oper/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @Override
-    public OperResponse update(@PathVariable Integer id, @Valid @RequestBody OperRequest requested) {
+    public ResponseEntity<Oper> update(@PathVariable Integer id, @Valid @RequestBody OperRequest requested) {
 //        throw new NotImplementedException("update /api/0.0.1/oper/{id}");
-        return operService.update(id, requested);
+        OperResponse updated = operService.update(id, requested);
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Cache-Control", "no-store, no-cache, must-revalidate");
+        headers.add("Pragma", "no-cache");
+        headers.add("Content-Type", "application/json; charset=UTF-8");
+//        return operService.update(id, requested);
+        return new ResponseEntity(updated, headers, HttpStatus.OK);
     }
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
@@ -158,7 +165,7 @@ interface OperServletable {
         oper(Integer id);
     ResponseEntity<Void>
         create(OperRequest requested);
-    OperResponse
+    ResponseEntity<Oper>
         update(Integer id, OperRequest requested);
     void
         delete(Integer id);

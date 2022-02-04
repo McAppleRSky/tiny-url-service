@@ -40,8 +40,8 @@ public class OperServiceImpl implements OperService {
     @Transactional(readOnly = true)
     @Override @Nonnull
     public OperResponse getById(int id) {
-//        return ofNullable(personDao.findById(id)).map(UserHelper::buildResponse).orElseThrow(() -> new EntityNotFoundException("User '" + id + "' not found"));
-        throw new NotImplementedException("UserResponse getById(int id)");
+//        throw new NotImplementedException("UserResponse getById(int id)");
+        return ofNullable(operRepository.findById(id)).map(OperHelper::buildResponse).orElseThrow(() -> new EntityNotFoundException("User '" + id + "' not found"));
     }
 
     @Transactional
@@ -63,6 +63,7 @@ public class OperServiceImpl implements OperService {
         if (updating==null){
             throw new EntityNotFoundException("Operator '" + id + "' not found");
         } else {
+            updating.setName(requested.getName());
             updating.setEmail(requested.getEmail());
             updating.setPassword(requested.getPassword());
             operRepository.update(updating);

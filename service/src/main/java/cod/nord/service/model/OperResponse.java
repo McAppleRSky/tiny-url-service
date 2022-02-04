@@ -14,6 +14,7 @@ public class OperResponse {
     private final Integer id;
     private final String name;
     private final String login;
+    private final String password;
     private final String email;
 
 }

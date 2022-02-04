@@ -123,8 +123,13 @@
       token.label.refresh.textContent = tokens.refreshToken });
     xhr.opers.addEventListener("load", (event) => {
       handleEvent(event);
+      let rows = oper.table.tbody.getElementsByTagName("tr");
+      let l = rows.length;
+      for (let i = 1; i < l; i++) {
+        rows[1].remove();
+      }
       token.label.status.textContent = xhr.refresh.oper + " " + xhr.opers.statusText;
-      let opersResponse = JSON.parse(event.target.responseText)
+      let opersResponse = JSON.parse(event.target.responseText);
         for (let entity of opersResponse) {
           let id = document.createElement('td');
           id.textContent = entity.id;
@@ -144,12 +149,15 @@
           row.onclick = clickRowHandler(row);
           oper.table.tbody.appendChild(row);
         }
+        oper.form.f.reset()
       });
       xhr.oper.addEventListener("load", (event) => {
         handleEvent(event);
+
         // token.label.status.textContent = xhr.refresh.oper + " " + xhr.opers.statusText;
-        // let opersResponse = JSON.parse(event.target.responseText)
-        getRefresh() });
+        // let currentResponse = JSON.parse(event.target.responseText)
+        alert(event.target.responseText);
+        opers() });
     function sendLogin() {
       let formData = new FormData(token.form.login);
       token.form.login.reset();
@@ -197,11 +205,8 @@
       xhr.opers.setRequestHeader('Content-type', 'application/json; charset=utf-8');
       xhr.opers.send(JSON.stringify(tokenRequest)) };
     function operCreate() {
-      if (oper.form.name.value.length == 0
-        || oper.form.login.value.length == 0
-        || oper.form.password.value.length == 0
-        || oper.form.email.value.length == 0
-      ) {
+      if (oper.form.login.value.length == 0
+        || oper.form.password.value.length == 0) {
         return;
       }
       let createRequest = {
@@ -218,20 +223,15 @@
     };
     function operUpdate() {
       if (oper.form.id.value.length == 0
-        || oper.form.name.value.length == 0
-        || oper.form.login.value.length == 0
-        || oper.form.password.value.length == 0
-        || oper.form.email.value.length == 0
-      ) {
+        || oper.form.password.value.length == 0) {
         return;
       }
       let updateRequest = {
         name:oper.form.name.value,
-        login:oper.form.login.value,
         password:oper.form.password.value,
         email:oper.form.email.value
       }
-      xhr.oper.open("PATCH", "/api/0.0.1/oper/" + oper.form.id);
+      xhr.oper.open("PATCH", "/api/0.0.1/oper/" + oper.form.id.value);
       xhr.oper.setRequestHeader('Authorization', 'Bearer ' + tokens.accessToken);
       xhr.oper.setRequestHeader('Content-type', 'application/json; charset=utf-8');
       xhr.oper.send(JSON.stringify(updateRequest)) };
@@ -239,7 +239,7 @@
       if (oper.form.id.value.length == 0) {
         return;
       }
-      xhr.oper.open("DELETE", "/api/0.0.1/oper/" + oper.form.id);
+      xhr.oper.open("DELETE", "/api/0.0.1/oper/" + oper.form.id.value);
       xhr.oper.setRequestHeader('Authorization', 'Bearer ' + tokens.accessToken);
       xhr.oper.setRequestHeader('Content-type', 'application/json; charset=utf-8');
       xhr.oper.send(null)
@@ -268,7 +268,8 @@
           delete:document.getElementById('oper_delete_btn') },
         table:{
           t: document.getElementById('opers_tbl'),
-          tbody: document.getElementById('opers_tbl_body') } };
+          tbody: document.getElementById('opers_tbl_body'),
+          firstRow: document.getElementById('first_row') } };
       log = document.querySelector('.event-log');
       token.form.login.addEventListener("submit", (event) => {
         event.preventDefault();
@@ -411,66 +412,50 @@
         <label for="refresh_token">Get refresh token:</label>
         <input type="button" id="refresh_btn" value="refresh token">
       </div>
+
       <div id="content_link" class="content_selecting hidden">
         <h1>Content links</h1>
-        <div id="container">
-          <div style="visibility: visible; overflow: visible; position: absolute; left: 100px; top: 100px;">
-            <div class="mainSection">
-              <label onclick="createForm()" style="outline: 2px solid #000;">(+) Add docs on this list</label>
+        <div>
+          <form name="link_form">
+            <div>
+              <input type="button" id="links_refresh_btn" value="refresh">
+              <input type="button" id="link_clear_btn" value="clear">
+              <input type="button" id="link_create_btn" value="create">
+              <input type="button" id="link_update_btn" value="update">
+              <input type="button" id="link_delete_btn" value="delete">
             </div>
-            <div class="mainSection">
-              <div class="">
-              </div>
-              <table id="mainTable" style="text-align: center;">
-                <thead>
-                  <tr>
-                    <th>
-                    </th>
-                    <th>
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td>
-                    </td>
-                    <td nowrap>
-                    </td>
-                    <td>
-                    </td>
-                    <td>
-                    </td>
-                    <td>
-                    </td>
-                    <td>
-                    </td>
-                    <td nowrap>
-                    </td>
-                    <td>
-                    </td>
-                    <td>
-                    </td>
-                    <td>
-                    </td>
-                    <td>
-                    </td>
-                    <td>
-                    </td>
-                    <td>
-                    </td>
-                    <td>
-                    </td>
-                    <td nowrap>
-                    </td>
-                    <td>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-            <div class="mainSection">
-            </div>
-          </div>
+            <table id="links_tbl">
+              <colgroup>
+                <col>
+              </colgroup>
+              <thead>
+                <tr>
+                  <td>
+                    <label for="oper_id">Id</label>
+                  </td>
+                  <td>
+                    <label for="path">Name</label>
+                  </td>
+                  <td>
+                    <label for="url">Login</label>
+                  </td>
+                </tr>
+              </thead>
+              <tbody id="links_tbl_body">
+                <tr>
+                  <td>
+                    <input type="text" id="link_id" name="id" readonly>
+                  </td>
+                  <td>
+                    <input type="text" id="link_path" name="path">
+                  </td>
+                  <td>
+                    <input type="text" id="link_url" name="url">
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </form>
         </div>
       </div>
       <div id="content_oper" class="content_selecting hidden">
@@ -508,7 +493,7 @@
                 </tr>
               </thead>
               <tbody id="opers_tbl_body">
-                <tr>
+                <tr id="first_row">
                   <td>
                     <input type="text" id="oper_id" name="id" readonly>
                   </td>

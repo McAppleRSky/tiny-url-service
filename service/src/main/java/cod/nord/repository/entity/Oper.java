@@ -50,9 +50,10 @@ public class Oper //implements UserDetails
     @Column(length=8)
     private Set<Role> roles;
 
-    @OneToMany(mappedBy="oper", cascade=CascadeType.ALL)
+    // https://stackoverflow.com/questions/13300386/jpa-how-do-i-add-new-items-to-a-list-with-a-onetomany-annotation
+    @OneToMany(mappedBy="oper", fetch= FetchType.EAGER, orphanRemoval=true, cascade=CascadeType.ALL)
 //    @OneToMany(cascade = {CascadeType.PERSIST})
-    private Set<Link> directions;
+    private Set<Link> links;
 
     /* @Override
     public boolean isAccountNonExpired() {

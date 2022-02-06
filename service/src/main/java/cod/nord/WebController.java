@@ -1,11 +1,15 @@
 package cod.nord;
 
+import cod.nord.repository.entity.Link;
 import cod.nord.repository.entity.Oper;
 import cod.nord.service.OperService;
 import cod.nord.service.auth.AuthService;
 import cod.nord.service.auth.model.JwtRequest;
 import cod.nord.service.auth.model.JwtResponse;
 import cod.nord.service.auth.model.RefreshJwtRequest;
+import cod.nord.service.link.LinkService;
+import cod.nord.service.model.LinkRequest;
+import cod.nord.service.model.LinkResponse;
 import cod.nord.service.model.OperRequest;
 import cod.nord.service.model.OperResponse;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +19,9 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -29,13 +36,14 @@ import java.util.Map;
 
 @RequiredArgsConstructor
 @Controller
-public class WebController implements OperServletable, AuthServletable, UrlServletable {
+public class WebController implements OperServletable, AuthServletable, LinkServletable {
 
     @Value("${base.host.name}")
     private String defaultHostName;
 
     private final AuthService authService;
     private final OperService operService;
+    private final LinkService linkService;
     private final Map<String, String> urlService;
 
 
@@ -57,12 +65,12 @@ public class WebController implements OperServletable, AuthServletable, UrlServl
 
     @PostMapping(value = "/api/0.0.1/oper", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @Override
-    public ResponseEntity<Void> create(@Valid @RequestBody OperRequest requested) {
+    public ResponseEntity<Void> createOper(@Valid @RequestBody OperRequest requested) {
 //        throw new NotImplementedException("create /api/0.0.1/oper");
         final int id = operService.create(requested);
         final URI uri = ServletUriComponentsBuilder
                 .fromCurrentRequest()
-                .path("/api/0.0.1/user/{id}")
+                .path("/api/0.0.1/oper/{id}")
                 .buildAndExpand(id)
                 .toUri();
         return ResponseEntity.created(uri).build();
@@ -70,21 +78,20 @@ public class WebController implements OperServletable, AuthServletable, UrlServl
 
     @PatchMapping(value = "/api/0.0.1/oper/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @Override
-    public ResponseEntity<Oper> update(@PathVariable Integer id, @Valid @RequestBody OperRequest requested) {
+    public ResponseEntity<Oper> updateOper(@PathVariable Integer id, @Valid @RequestBody OperRequest requested) {
 //        throw new NotImplementedException("update /api/0.0.1/oper/{id}");
         OperResponse updated = operService.update(id, requested);
         HttpHeaders headers = new HttpHeaders();
         headers.add("Cache-Control", "no-store, no-cache, must-revalidate");
         headers.add("Pragma", "no-cache");
         headers.add("Content-Type", "application/json; charset=UTF-8");
-//        return operService.update(id, requested);
         return new ResponseEntity(updated, headers, HttpStatus.OK);
     }
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("/api/0.0.1/oper/{id}")
     @Override
-    public void delete(@PathVariable Integer id) {
+    public void deleteOper(@PathVariable Integer id) {
         operService.delete(id);
 //        throw new NotImplementedException("delete /api/0.0.1/oper/{id}");
     }
@@ -139,6 +146,51 @@ public class WebController implements OperServletable, AuthServletable, UrlServl
         System.out.println();
     }
 
+    @GetMapping(value = "/api/0.0.1/links", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    @Override
+    public Collection<LinkResponse> links() {
+        return linkService.findAll();
+    }
+
+    @GetMapping(value = "/api/0.0.1/link/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @Override
+    public LinkResponse link(Integer id) {
+        throw new NotImplementedException("LinkResponse link(Integer id)");
+//        return null;
+    }
+
+    @PostMapping(value = "/api/0.0.1/link", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @Override
+    public ResponseEntity<Void> createLink(@Valid @RequestBody LinkRequest requested) {
+        final int id = linkService.create(requested);
+        final URI uri = ServletUriComponentsBuilder
+                .fromCurrentRequest()
+                .path("/api/0.0.1/link/{id}")
+                .buildAndExpand(id)
+                .toUri();
+        return ResponseEntity.created(uri).build();
+    }
+
+    @PatchMapping(value = "/api/0.0.1/link/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @Override
+    public ResponseEntity<Link> updateLink(Integer id, LinkRequest requested) {
+//        throw new NotImplementedException("ResponseEntity<Link> updateLink(Integer id, LinkRequest requested)");
+        LinkResponse updated = linkService.update(id, requested);
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Cache-Control", "no-store, no-cache, must-revalidate");
+        headers.add("Pragma", "no-cache");
+        headers.add("Content-Type", "application/json; charset=UTF-8");
+        return new ResponseEntity(updated, headers, HttpStatus.OK);
+    }
+
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @DeleteMapping("/api/0.0.1/link/{id}")
+    @Override
+    public void deleteLink(Integer id) {
+        throw new NotImplementedException("void deleteLink(Integer id)");
+    }
+
     @GetMapping("/*")
     @Override
     public void redirect(HttpServletRequest request, HttpServletResponse response) {
@@ -164,11 +216,11 @@ interface OperServletable {
     OperResponse
         oper(Integer id);
     ResponseEntity<Void>
-        create(OperRequest requested);
+        createOper(OperRequest requested);
     ResponseEntity<Oper>
-        update(Integer id, OperRequest requested);
+        updateOper(Integer id, OperRequest requested);
     void
-        delete(Integer id);
+        deleteOper(Integer id);
 }
 
 interface AuthServletable {
@@ -182,7 +234,17 @@ interface AuthServletable {
         getNewRefreshToken(RefreshJwtRequest request);
 }
 
-interface UrlServletable {
+interface LinkServletable {
     void redirect(HttpServletRequest request, HttpServletResponse response);
     void pathEmpty(HttpServletRequest request, HttpServletResponse response);
+    Collection<LinkResponse>
+        links();
+    LinkResponse
+        link(Integer id);
+    ResponseEntity<Void>
+        createLink(LinkRequest requested);
+    ResponseEntity<Link>
+        updateLink(Integer id, LinkRequest requested);
+    void
+        deleteLink(Integer id);
 }

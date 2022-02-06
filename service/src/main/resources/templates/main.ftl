@@ -78,14 +78,14 @@
       opers: new XMLHttpRequest(),
       oper: new XMLHttpRequest(),
       links: new XMLHttpRequest(),
-      link: new XMLHttpRequest(),
+      link: new XMLHttpRequest()
     };
     var token, tokens;
     var sendToken;
     var oper;
     var link;
 
-    var clickRowHandler = function(row) {
+    var clickOpersRowHandler = function(row) {
       return function() {
         let cells = row.getElementsByTagName("td");
         oper.form.id.value = cells[0].innerText;
@@ -93,6 +93,18 @@
         oper.form.login.value = cells[2].innerText;
         // oper.form.password.value = cells[3];
         oper.form.email.value = cells[4].innerText;
+      };
+    };
+
+    var clickLinksRowHandler = function(row) {
+      return function() {
+        let cells = row.getElementsByTagName("td");
+        link.form.id.value = cells[0].innerText;
+        link.form.path.value = cells[1].innerText;
+        link.form.url.value = cells[2].innerText;
+        link.form.expire.value = cells[3].innerText;
+        link.form.follow.value = cells[4].innerText;
+        link.form.unique.value = cells[5].innerText;
       };
     };
 
@@ -115,27 +127,27 @@
       token.label.refresh.textContent = tokens.refreshToken
     });
     xhr.token.addEventListener("load", (event) => {
-      handleEvent(event);
+      // handleEvent(event);
       token.label.status.textContent = xhr.token.status + " " + xhr.token.statusText;
       let current = JSON.parse(event.target.responseText);
       tokens.accessToken = current.accessToken;
       token.label.access.textContent = current.accessToken
     });
     xhr.refresh.addEventListener("load", (event) => {
-      handleEvent(event);
+      // handleEvent(event);
       token.label.status.textContent = xhr.refresh.status + " " + xhr.refresh.statusText;
       tokens = JSON.parse(event.target.responseText);
       token.label.access.textContent = tokens.accessToken;
       token.label.refresh.textContent = tokens.refreshToken
     });
     xhr.opers.addEventListener("load", (event) => {
-      handleEvent(event);
+      // handleEvent(event);
       let rows = oper.table.tbody.getElementsByTagName("tr");
       let l = rows.length;
       for (let i = 1; i < l; i++) {
         rows[1].remove();
       }
-      token.label.status.textContent = xhr.refresh.oper + " " + xhr.opers.statusText;
+      token.label.status.textContent = xhr.opers.status + " " + xhr.opers.statusText;
       let opersResponse = JSON.parse(event.target.responseText);
       for (let entity of opersResponse) {
         let id = document.createElement('td');
@@ -153,18 +165,59 @@
         row.appendChild(login);
         row.appendChild(pass);
         row.appendChild(email);
-        row.onclick = clickRowHandler(row);
+        row.onclick = clickOpersRowHandler(row);
         oper.table.tbody.appendChild(row);
       }
       oper.form.f.reset()
     });
     xhr.oper.addEventListener("load", (event) => {
-      handleEvent(event);
-
-      // token.label.status.textContent = xhr.refresh.oper + " " + xhr.opers.statusText;
+      // handleEvent(event);
+      token.label.status.textContent = xhr.oper.status + " " + xhr.oper.statusText;
       // let currentResponse = JSON.parse(event.target.responseText)
       alert(event.target.responseText);
       opers()
+    });
+
+    xhr.links.addEventListener("load", (event) => {
+      // handleEvent(event);
+      let rows = link.table.tbody.getElementsByTagName("tr");
+      let l = rows.length;
+      for (let i = 1; i < l; i++) {
+        rows[1].remove();
+      }
+      token.label.status.textContent = xhr.links.status + " " + xhr.links.statusText;
+      let linksResponse = JSON.parse(event.target.responseText);
+      for (let entity of linksResponse) {
+        let id = document.createElement('td');
+        id.textContent = entity.id;
+        let path = document.createElement('td');
+        path.textContent = entity.path;
+        let url = document.createElement('td');
+        url.textContent = entity.url;
+        let expire = document.createElement('td');
+        expire.textContent = entity.expire;
+        let follow = document.createElement('td');
+        follow.textContent = entity.follow;
+        let unique = document.createElement('td');
+        unique.textContent = entity.unique;
+        let row = document.createElement('tr');
+        row.appendChild(id);
+        row.appendChild(path);
+        row.appendChild(url);
+        row.appendChild(expire);
+        row.appendChild(follow);
+        row.appendChild(unique);
+        row.onclick = clickLinksRowHandler(row);
+        link.table.tbody.appendChild(row);
+      }
+      link.form.f.reset()
+    });
+    xhr.link.addEventListener("load", (event) => {
+      // handleEvent(event);
+      token.label.status.textContent = xhr.link.status + " " + xhr.link.statusText;
+      // let currentResponse = JSON.parse(event.target.responseText)
+      alert(event.target.responseText);
+      links()
     });
 
     function sendLogin() {
@@ -203,20 +256,21 @@
     };
 
     function opers() {
-      if (tokens.refreshToken == "") {
+      if (tokens.accessToken == "") {
         return;
       }
       xhr.opers.open("GET", "/api/0.0.1/opers");
-      let tokenRequest = {
-        refreshToken: tokens.refreshToken
-      };
+      // let tokenRequest = {refreshToken: tokens.refreshToken};
       xhr.opers.setRequestHeader('Authorization', 'Bearer ' + tokens.accessToken);
       xhr.opers.setRequestHeader('Content-type', 'application/json; charset=utf-8');
-      xhr.opers.send(JSON.stringify(tokenRequest))
+      xhr.opers.send(null
+        // JSON.stringify(tokenRequest)
+      )
     };
 
     function operCreate() {
-      if (oper.form.login.value.length == 0 ||
+      if (tokens.accessToken == "" ||
+        oper.form.login.value.length == 0 ||
         oper.form.password.value.length == 0) {
         return;
       }
@@ -234,7 +288,8 @@
     };
 
     function operUpdate() {
-      if (oper.form.id.value.length == 0 ||
+      if (tokens.accessToken == "" ||
+        oper.form.id.value.length == 0 ||
         oper.form.password.value.length == 0) {
         return;
       }
@@ -250,13 +305,69 @@
     };
 
     function operDelete() {
-      if (oper.form.id.value.length == 0) {
+      if (tokens.accessToken == "" ||
+        oper.form.id.value.length == 0) {
         return;
       }
       xhr.oper.open("DELETE", "/api/0.0.1/oper/" + oper.form.id.value);
       xhr.oper.setRequestHeader('Authorization', 'Bearer ' + tokens.accessToken);
       xhr.oper.setRequestHeader('Content-type', 'application/json; charset=utf-8');
       xhr.oper.send(null)
+    };
+
+    function links() {
+      if (tokens.accessToken == "") {
+        return;
+      }
+      xhr.links.open("GET", "/api/0.0.1/links");
+      // let tokenRequest = { refreshToken: tokens.refreshToken };
+      xhr.links.setRequestHeader('Authorization', 'Bearer ' + tokens.accessToken);
+      xhr.links.setRequestHeader('Content-type', 'application/json; charset=utf-8');
+      xhr.links.send(null)
+    }
+
+    function linkCreate() {
+      if (tokens.accessToken == "" ||
+        link.form.url.value.length == 0 ||
+        link.form.expire.value.length == 0) {
+        return;
+      }
+      let createRequest = {
+        url: link.form.url.value,
+        expire: link.form.expire.value
+      }
+      xhr.link.open("POST", "/api/0.0.1/link/" + link.form.id.value);
+      xhr.link.setRequestHeader('Authorization', 'Bearer ' + tokens.accessToken);
+      xhr.link.setRequestHeader('Content-type', 'application/json; charset=utf-8');
+      xhr.link.send(JSON
+        .stringify(createRequest))
+    }
+
+    function linkUpdate() {
+      if (tokens.accessToken == "" ||
+        link.form.url.value.length == 0 ||
+        link.form.expire.value.length == 0) {
+        return;
+      }
+      let updateRequest = {
+        url: link.form.url.value,
+        expire: link.form.expire.value
+      }
+      xhr.link.open("PATCH", "/api/0.0.1/link/" + link.form.id.value);
+      xhr.link.setRequestHeader('Authorization', 'Bearer ' + tokens.accessToken);
+      xhr.link.setRequestHeader('Content-type', 'application/json; charset=utf-8');
+      xhr.link.send(JSON.stringify(updateRequest))
+    }
+
+    function linkDelete() {
+      if (tokens.accessToken == "" ||
+        link.form.id.value.length == 0) {
+        return;
+      }
+      xhr.link.open("DELETE", "/api/0.0.1/oper/" + link.form.id.value);
+      xhr.link.setRequestHeader('Authorization', 'Bearer ' + tokens.accessToken);
+      xhr.link.setRequestHeader('Content-type', 'application/json; charset=utf-8');
+      xhr.link.send(null)
     };
     document.addEventListener("DOMContentLoaded", () => {
       token = {
@@ -296,14 +407,17 @@
           f: document.forms.link_form,
           id: document.getElementById('link_id'),
           path: document.getElementById('link_path'),
-          url: document.getElementById('link_url')
+          url: document.getElementById('link_url'),
+          expire: document.getElementById('link_expire'),
+          follow: document.getElementById('link_follow'),
+          unique: document.getElementById('link_follow_unique')
         },
         button: {
-          refresh: document.getElementById('opers_refresh_btn'),
-          clear: document.getElementById('oper_clear_btn'),
-          create: document.getElementById('oper_create_btn'),
-          update: document.getElementById('oper_update_btn'),
-          delete: document.getElementById('oper_delete_btn')
+          refresh: document.getElementById('links_refresh_btn'),
+          clear: document.getElementById('link_clear_btn'),
+          create: document.getElementById('link_create_btn'),
+          update: document.getElementById('link_update_btn'),
+          delete: document.getElementById('link_delete_btn')
         },
         table: {
           t: document.getElementById('links_tbl'),
@@ -346,26 +460,26 @@
         .addEventListener('click', () => {
           operDelete()
         });
-        link.button.refresh
-          .addEventListener('click', () => {
-            links()
-          });
-        link.button.clear
-          .addEventListener('click', () => {
-            link.form.f.reset()
-          });
-        link.button.create
-          .addEventListener('click', () => {
-            linkCreate()
-          });
-        link.button.update
-          .addEventListener('click', () => {
-            linkUpdate()
-          });
-        link.button.delete
-          .addEventListener('click', () => {
-            linkDelete()
-          })
+      link.button.refresh
+        .addEventListener('click', () => {
+          links()
+        });
+      link.button.clear
+        .addEventListener('click', () => {
+          link.form.f.reset()
+        });
+      link.button.create
+        .addEventListener('click', () => {
+          linkCreate()
+        });
+      link.button.update
+        .addEventListener('click', () => {
+          linkUpdate()
+        });
+      link.button.delete
+        .addEventListener('click', () => {
+          linkDelete()
+        })
     })
   </script>
   <style type="text/css" media="screen">
@@ -516,10 +630,15 @@
                     <label for="link_url">URL</label>
                   </td>
                   <td>
-                    <label for="link_follow">Path</label>
+                    <label for="link_expire">Expire</label>
                   </td>
                   <td>
-                    <label for="link_follow_unique">URL</label>
+                    <label for="link_follow">Follow<p>count</label>
+                  </td>
+                  <td>
+                    <label for="link_follow_unique">Follow<p>unique
+                      <p>count
+                    </label>
                   </td>
                 </tr>
               </thead>
@@ -529,10 +648,13 @@
                     <input type="text" id="link_id" name="id" readonly>
                   </td>
                   <td>
-                    <input type="text" id="link_path" name="path">
+                    <input type="text" id="link_path" name="path" readonly>
                   </td>
                   <td>
-                    <input type="text" id="link_url" name="url" readonly>
+                    <input type="text" id="link_url" name="url">
+                  </td>
+                  <td>
+                    <input type="datetime-local" id="link_expire" name="expire">
                   </td>
                   <td>
                     <input type="text" id="link_follow" name="follow" readonly>

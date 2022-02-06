@@ -1,6 +1,7 @@
 package cod.nord.service;
 
 import cod.nord.repository.entity.Oper;
+import cod.nord.service.model.LinkRequest;
 import cod.nord.service.model.OperRequest;
 import cod.nord.service.model.OperResponse;
 
@@ -24,6 +25,8 @@ public interface OperService {
     void delete(int id);
 
     Optional<Oper> getByLogin(String login);
+
+//    int createLink(LinkRequest requested);
 
     /*void addPersonToDepartment(int departmentId, int personId);
     void removePersonFromDepartment(int departmentId, int personId);

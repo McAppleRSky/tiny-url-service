@@ -30,8 +30,8 @@ public class OperRepositoryImpl implements OperRepository {
 
     @Nonnull
     @Override
-    public Oper update(@Nonnull Oper user) {
-        return entityManager.merge(user);
+    public Oper update(@Nonnull Oper entity) {
+        return entityManager.merge(entity);
     }
 
     @Nullable

@@ -34,7 +34,7 @@ public class Link {
     @Column(name="follow_unique_count", columnDefinition="integer default 0")
     private Integer followUniqueCount;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER, targetEntity=Oper.class)
     @JoinColumn(name="oper_id", nullable=false)
     private Oper oper;
 

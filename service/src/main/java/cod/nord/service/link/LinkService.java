@@ -24,4 +24,5 @@ public interface LinkService {
     void delete(int id);
 
     Optional<Link> getByPath(String path);
+
 }

@@ -9,6 +9,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.TypedQuery;
 import java.util.List;
 
 @Repository
@@ -51,6 +52,13 @@ public class LinkRepositoryImpl implements LinkRepository {
         return created;
     }
 
-
+    public Link findByPath(@Nonnull String path) {
+        TypedQuery<Link> query = entityManager.createQuery( //
+                "SELECT l FROM Link l WHERE l.path=:path",
+                Link.class );
+        return query
+                .setParameter("path", path)
+                .getSingleResult();
+    }
 
 }

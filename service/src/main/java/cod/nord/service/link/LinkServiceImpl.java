@@ -10,6 +10,7 @@ import cod.nord.service.model.LinkResponse;
 import cod.nord.service.model.ModelHelper;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.NotImplementedException;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -17,8 +18,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.persistence.EntityNotFoundException;
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Optional;
 
@@ -33,10 +36,12 @@ public class LinkServiceImpl implements LinkService {
     private final OperRepository operRepository;
     private final CodecService codecService;
 
+    @Value("${path.codec.length}")
+    private int PATH_LENGTH;
+
     @Transactional(readOnly = true)
     @Override @Nonnull
     public Collection<LinkResponse> findAll() {
-//        throw new NotImplementedException("");
         return linkRepository.findAll()
                 .stream()
                 .map(ModelHelper::buildResponse)
@@ -111,10 +116,21 @@ public class LinkServiceImpl implements LinkService {
         linkRepository.delete(id);
     }
 
-    @Override
+    @Transactional(readOnly = true)
+    @Override  //@Nullable
     public Optional<Link> getByPath(String path) {
-        throw new NotImplementedException("");
-//        return Optional.empty();
+        Link link = null;
+        if (path.length()==PATH_LENGTH) {
+            link = linkRepository.findByPath(path);
+        }
+        if (link == null) {
+            return ofNullable(null);
+        }
+        LocalDateTime localDateTime = link.getExpire().toLocalDateTime();
+        String url = link.getUrl();
+        if (localDateTime.isAfter(LocalDateTime.now())) {
+            return ofNullable(link);
+        } else return ofNullable(null);
     }
 
 }

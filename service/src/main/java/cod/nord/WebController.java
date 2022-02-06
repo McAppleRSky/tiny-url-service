@@ -33,6 +33,7 @@ import javax.validation.Valid;
 import java.net.URI;
 import java.util.Collection;
 import java.util.Map;
+import java.util.Optional;
 
 @RequiredArgsConstructor
 @Controller
@@ -198,12 +199,11 @@ public class WebController implements OperServletable, AuthServletable, LinkServ
         StringBuffer requestURL = request.getRequestURL();
         String contextPath = request.getContextPath();
         String pathStr = path.split("/", 3)[1];
-        if (pathStr.length()<3) {
-            String projectUrl = urlService.get(pathStr);
-            if (projectUrl==null){
-                projectUrl = defaultHostName;
-            }}
-        response.setHeader("Location", defaultHostName);
+        Optional<Link> byPath = linkService.getByPath(pathStr);
+        Link actual_link = byPath.orElseThrow(() -> {
+            throw new NotImplementedException("No actual link");
+        });
+        response.setHeader("Location", actual_link.getUrl());
         response.setStatus(302);
         // throw bound
     }

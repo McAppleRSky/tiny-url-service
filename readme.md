@@ -1,3 +1,6 @@
+Стек технологий: Spring Boot starter MVC, Security (jwt), JDBC (flyway JPA h2), freemarker, pure javascript ajax json, docker ngnx linux.
+
+Api
 
 Get /* - принимает короткую ссылку, возвращает redirect по длинной ссылке
 Get / - status 404

@@ -1,0 +1,26 @@
+version: '3'
+
+services:
+  tiny-url:
+    container_name: tiny-url
+    build:
+      context: docker-tiny-url
+      dockerfile: Dockerfile
+    image: 970c2610801d
+    ports:
+      - 8080:80
+    networks:
+      default:
+        ipv4_address: 192.168.8.3
+
+networks:
+  default:
+    driver: bridge
+    driver_opts:
+      com.docker.network.bridge.name: nw-tiny-url
+    ipam:
+      driver: default
+      config:
+        - subnet: 192.168.8.0/24
+          gateway: 192.168.8.1
+    enable_ipv6: false
